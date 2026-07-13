@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using ResumeAnalyzer.Services.Interface;
 using ResumeAnalyzer.Models;
 
 namespace ResumeAnalyzer.Controllers
 {
+    [Authorize]
     public class ResumesController : Controller
     {
         private readonly IResumeService _resumeService;
@@ -13,10 +16,12 @@ namespace ResumeAnalyzer.Controllers
             _resumeService = resumeService;
         }
 
+        private string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
         // Kullanıcının mevcut özgeçmişlerini listeleyeceği sayfa
         public async Task<IActionResult> Index()
         {
-            var resumes = await _resumeService.GetUserResumesAsync("test-user-orkun", HttpContext.RequestAborted);
+            var resumes = await _resumeService.GetUserResumesAsync(CurrentUserId, HttpContext.RequestAborted);
             return View(resumes);
         }
 
@@ -41,7 +46,7 @@ namespace ResumeAnalyzer.Controllers
             try
             {
                 var resultDto = await _resumeService.ProcessUploadAsync(
-                    resumeFile, "test-user-orkun", HttpContext.RequestAborted);
+                    resumeFile, CurrentUserId, HttpContext.RequestAborted);
 
                 return RedirectToAction(nameof(Details), new { id = resultDto.Id });
             }
@@ -69,7 +74,7 @@ namespace ResumeAnalyzer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            await _resumeService.DeleteResumeAsync(id, "test-user-orkun", HttpContext.RequestAborted);
+            await _resumeService.DeleteResumeAsync(id, CurrentUserId, HttpContext.RequestAborted);
             return RedirectToAction(nameof(Index));
         }
 
@@ -77,7 +82,7 @@ namespace ResumeAnalyzer.Controllers
         [HttpGet]
         public async Task<IActionResult> Compare(int? id1, int? id2)
         {
-            var resumesList = await _resumeService.GetUserResumesAsync("test-user-orkun", HttpContext.RequestAborted);
+            var resumesList = await _resumeService.GetUserResumesAsync(CurrentUserId, HttpContext.RequestAborted);
 
             ViewBag.ResumesList = resumesList;
             ViewBag.Resume1 = resumesList.FirstOrDefault(r => r.Id == id1);
