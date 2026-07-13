@@ -45,7 +45,7 @@ public class TextExtractorService : ITextExtractorService
         using (var wordDoc = WordprocessingDocument.Open(stream, false))
         {
             var mainPart = wordDoc.MainDocumentPart;
-            if (mainPart != null && mainPart.Document.Body is { } body)
+            if (mainPart != null && mainPart.Document != null && mainPart.Document.Body is { } body)
             {
                 foreach (var paragraph in body.Descendants<Paragraph>())
                 {
