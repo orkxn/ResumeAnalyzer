@@ -103,4 +103,33 @@ public class ResumeService : IResumeService
             throw; // Controller'ın yakalaması için yeniden fırlat
         }
     }
+
+    public async Task<List<Resume>> GetUserResumesAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Resumes
+            .Include(r => r.Analysis)
+            .Where(r => r.UserId == userId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Resume?> GetResumeByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _context.Resumes
+            .Include(r => r.Analysis)
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+    }
+
+    public async Task<bool> DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default)
+    {
+        var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId, cancellationToken);
+        if (resume == null)
+        {
+            return false;
+        }
+
+        _context.Resumes.Remove(resume);
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
 }

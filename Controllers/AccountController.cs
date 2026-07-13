@@ -26,6 +26,7 @@ namespace ResumeAnalyzer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -71,6 +72,7 @@ namespace ResumeAnalyzer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterRequestDto dto, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -84,11 +86,8 @@ namespace ResumeAnalyzer.Controllers
 
             if (result.Succeeded)
             {
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
-                    return Redirect(returnUrl);
-                }
-                return RedirectToAction("Index", "Home");
+                TempData["RegistrationSuccess"] = "Kayıt başarılı! Giriş yapmak için lütfen bilgilerinizi girin.";
+                return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
             }
 
             foreach (var error in result.Errors)
@@ -113,6 +112,7 @@ namespace ResumeAnalyzer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(string email)
         {
             if (string.IsNullOrEmpty(email))
