@@ -53,6 +53,14 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
+            "DocumentFormat.OpenXml": {
+              "target": "Package",
+              "version": "[3.5.1, )"
+            },
+            "Google.Apis.Drive.v3": {
+              "target": "Package",
+              "version": "[1.75.0.4192, )"
+            },
             "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": {
               "target": "Package",
               "version": "[10.0.9, )"
@@ -74,13 +82,15 @@
               "target": "Package",
               "version": "[10.0.9, )"
             },
-            "Microsoft.EntityFrameworkCore.Sqlite": {
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
               "version": "[10.0.9, )"
             },
-            "Microsoft.EntityFrameworkCore.Tools": {
+            "UglyToad.PdfPig": {
               "target": "Package",
-              "version": "[10.0.9, )"
+              "version": "[1.7.0-custom-5, )"
             }
           },
           "imports": [

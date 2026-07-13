@@ -1,8 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "DTO Servis Testi";
+    Layout = null;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div style="padding: 40px; font-family: sans-serif;">
+    <h2>ResumeAnalyzer - DTO Tabanlı Servis Testi</h2>
+    
+    <form action="/Home/TestUpload" method="post" enctype="multipart/form-data" style="margin-top: 20px;">
+        <!-- DTO'daki property ismiyle birebir aynı 'name="File"' olmalı -->
+        <input type="file" name="File" accept=".pdf,.docx" required />
+        <br /><br />
+        <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer;">
+            DTO İsteğini Tetikle
+        </button>
+    </form>
 </div>
