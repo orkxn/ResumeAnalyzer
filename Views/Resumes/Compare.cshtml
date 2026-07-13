@@ -18,7 +18,7 @@
         <div class="text-center">
             <label class="block text-xs font-medium text-slate-500 dark:text-neutral-400 mb-2 uppercase tracking-wider transition-colors">1. Özgeçmiş</label>
             <div class="relative">
-                <select id="selectResume1" onchange="updateCompare()" class="w-full bg-white dark:bg-[#121212] border border-slate-200 dark:border-neutral-800 rounded-2xl pl-4 pr-10 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-2 focus:ring-slate-200 dark:focus:ring-neutral-700 focus:outline-none appearance-none text-left cursor-pointer hover:border-slate-300 dark:hover:border-neutral-600 transition-all">
+                <select id="selectResume1" onchange="updateCompare()" class="w-full bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-slate-200 dark:border-neutral-800 rounded-2xl pl-4 pr-10 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-4 focus:ring-slate-100 dark:focus:ring-neutral-800/40 focus:border-slate-400 dark:focus:border-neutral-700 focus:outline-none appearance-none text-left cursor-pointer hover:border-slate-300 dark:hover:border-neutral-700 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 ease-out">
                     <option value="">-- Seçiniz --</option>
                     @foreach (var resume in resumesList)
                     {
@@ -28,7 +28,7 @@
                     }
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-neutral-500">
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                 </div>
@@ -42,7 +42,7 @@
         <div class="text-center">
             <label class="block text-xs font-medium text-slate-500 dark:text-neutral-400 mb-2 uppercase tracking-wider transition-colors">2. Özgeçmiş</label>
             <div class="relative">
-                <select id="selectResume2" onchange="updateCompare()" class="w-full bg-white dark:bg-[#121212] border border-slate-200 dark:border-neutral-800 rounded-2xl pl-4 pr-10 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-2 focus:ring-slate-200 dark:focus:ring-neutral-700 focus:outline-none appearance-none text-left cursor-pointer hover:border-slate-300 dark:hover:border-neutral-600 transition-all">
+                <select id="selectResume2" onchange="updateCompare()" class="w-full bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-slate-200 dark:border-neutral-800 rounded-2xl pl-4 pr-10 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-4 focus:ring-slate-100 dark:focus:ring-neutral-800/40 focus:border-slate-400 dark:focus:border-neutral-700 focus:outline-none appearance-none text-left cursor-pointer hover:border-slate-300 dark:hover:border-neutral-700 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 ease-out">
                     <option value="">-- Seçiniz --</option>
                     @foreach (var resume in resumesList)
                     {
@@ -52,7 +52,7 @@
                     }
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-neutral-500">
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                     </svg>
                 </div>
