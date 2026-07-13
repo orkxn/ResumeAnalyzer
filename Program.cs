@@ -1,5 +1,8 @@
+using ResumeAnalyzer.Services;
+using ResumeAnalyzer.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ResumeAnalyzer.Models;
 using ResumeAnalyzer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,9 +13,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+// dependency-injection için
+builder.Services.AddScoped<ITextExtractorService, TextExtractorService>();
+builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
+builder.Services.AddHttpClient<IAiAnalysisService, AiAnalysisService>();
+builder.Services.AddScoped<IResumeService, ResumeService>();
 
 var app = builder.Build();
 
@@ -31,6 +40,7 @@ else
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

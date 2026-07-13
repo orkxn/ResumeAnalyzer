@@ -1,24 +1,39 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using ResumeAnalyzer.Models;
+using ResumeAnalyzer.DTOs;
+using ResumeAnalyzer.Services.Interface;
 
 namespace ResumeAnalyzer.Controllers;
 
 public class HomeController : Controller
 {
+    private readonly IResumeService _resumeService;
+
+    public HomeController(IResumeService resumeService)
+    {
+        _resumeService = resumeService;
+    }
+
     public IActionResult Index()
     {
         return View();
     }
 
-    public IActionResult Privacy()
+    [HttpPost]
+    public async Task<IActionResult> TestUpload(ResumeUploadRequestDto requestDto)
     {
-        return View();
-    }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        try
+        {
+            // İleride Identity bağlandığında: User.FindFirstValue(ClaimTypes.NameIdentifier)
+            var result = await _resumeService.ProcessUploadAsync(
+                requestDto.File, "test-user-orkun", HttpContext.RequestAborted);
+
+            return Json(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"İşlem sırasında bir hata oluştu: {ex.Message}");
+        }
     }
 }
