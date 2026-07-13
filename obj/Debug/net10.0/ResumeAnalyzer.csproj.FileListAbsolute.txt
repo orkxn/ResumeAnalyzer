@@ -228,7 +228,6 @@ C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\a3yg
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\nezrqnk58p-{0}-muycvpuwrr-muycvpuwrr.gz
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\v0zgfp0y55-{0}-87fc7y1x7t-87fc7y1x7t.gz
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\yfc7ypekbg-{0}-mlv21k5csn-mlv21k5csn.gz
-C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\wqlghaltz5-{0}-b9sayid5wm-b9sayid5wm.gz
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\w5vdv06qj1-{0}-61n19gt1b8-61n19gt1b8.gz
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\08jmqkejkg-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\yhg7e1964a-{0}-bqjiyaj88i-bqjiyaj88i.gz
@@ -303,3 +302,6 @@ C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\refint\ResumeAn
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\ResumeAnalyzer.pdb
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\ResumeAnalyzer.genruntimeconfig.cache
 C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\ref\ResumeAnalyzer.dll
+C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\bin\Debug\net10.0\package-lock.json
+C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\bin\Debug\net10.0\package.json
+C:\Users\Ork74\OneDrive\Desktop\ResumeAnalyzer\obj\Debug\net10.0\compressed\wqlghaltz5-{0}-s5j7i8j1n9-s5j7i8j1n9.gz
