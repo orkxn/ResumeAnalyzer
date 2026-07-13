@@ -26,6 +26,7 @@ namespace ResumeAnalyzer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginRequestDto dto, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -71,6 +72,7 @@ namespace ResumeAnalyzer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterRequestDto dto, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -113,6 +115,7 @@ namespace ResumeAnalyzer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(string email)
         {
             if (string.IsNullOrEmpty(email))

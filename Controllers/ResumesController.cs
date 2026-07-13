@@ -39,6 +39,7 @@ namespace ResumeAnalyzer.Controllers
 
         // Formdan gelen CV'yi karşılayan Action
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upload(IFormFile resumeFile)
         {
             if (resumeFile == null || resumeFile.Length == 0)
@@ -80,6 +81,7 @@ namespace ResumeAnalyzer.Controllers
 
         // CV Silme işlemi
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var resume = await _context.Resumes.FindAsync(id);
