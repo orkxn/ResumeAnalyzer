@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ResumeAnalyzer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+848d489c9a4896c38b9538148a7884725082a4d2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b8675628edaa8d7935dbbbe5ead948e9a3823fff")]
 [assembly: System.Reflection.AssemblyProductAttribute("ResumeAnalyzer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ResumeAnalyzer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
