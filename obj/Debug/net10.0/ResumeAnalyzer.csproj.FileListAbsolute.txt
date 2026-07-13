@@ -319,4 +319,4 @@
 /Users/erenkurt/Desktop/resume-analyzer/obj/Debug/net10.0/ResumeAnalyzer.pdb
 /Users/erenkurt/Desktop/resume-analyzer/obj/Debug/net10.0/ResumeAnalyzer.genruntimeconfig.cache
 /Users/erenkurt/Desktop/resume-analyzer/obj/Debug/net10.0/ref/ResumeAnalyzer.dll
-/Users/erenkurt/Desktop/resume-analyzer/obj/Debug/net10.0/compressed/wqlghaltz5-{0}-d4h29z5dut-d4h29z5dut.gz
+/Users/erenkurt/Desktop/resume-analyzer/obj/Debug/net10.0/compressed/wqlghaltz5-{0}-d6wi85fi9l-d6wi85fi9l.gz
