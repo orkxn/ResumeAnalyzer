@@ -1,51 +1,109 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ResumeAnalyzer</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - CV Analiz</title>
+    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ResumeAnalyzer.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ResumeAnalyzer</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ResumeAnalyzer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+</head>
+<body class="bg-[#fbfbfd] dark:bg-[#0a0a0a] text-slate-900 dark:text-neutral-200 font-sans antialiased flex flex-col min-h-screen transition-colors duration-300">
+
+    <header class="sticky top-0 z-50 bg-white/70 dark:bg-[#0a0a0a]/80 backdrop-blur-md border-b border-gray-200/50 dark:border-neutral-800 transition-colors duration-300">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                
+                <div class="flex-shrink-0 flex items-center">
+                    <!-- LOGO: dark:text-white eklendi -->
+                    <a asp-controller="Home" asp-action="Index" class="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
+                        CV<span class="text-slate-500 dark:text-neutral-400">Analiz</span>
+                    </a>
+                </div>
+
+                <nav class="hidden md:flex space-x-8">
+                    <!-- MENÜ LİNKLERİ: dark:text-neutral-400 ve dark:hover:text-white eklendi -->
+                    <a asp-controller="Resumes" asp-action="Index" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Özgeçmişler</a>
+                    <a asp-controller="Resumes" asp-action="Upload" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Yeni Yükle</a>
+                    <a asp-controller="Resumes" asp-action="Compare" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Karşılaştır</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    
+                    <button id="theme-toggle" type="button" class="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-full transition-all focus:outline-none mr-2" title="Temayı Değiştir">
+                        <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                        </svg>
+                        <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                        </svg>
+                    </button>
+
+                    <a asp-area="Identity" asp-page="/Account/Login" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Giriş Yap</a>
+                    <!-- BUTON: Karanlık modda göz yormayan kırık beyaz pill -->
+                    <a asp-area="Identity" asp-page="/Account/Register" class="text-sm font-medium bg-slate-900 dark:bg-neutral-200 text-white dark:text-neutral-900 px-4 py-2 rounded-full hover:bg-black dark:hover:bg-neutral-300 transition-all shadow-sm">
+                        Kayıt Ol
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-white dark:bg-[#0a0a0a] border-t border-gray-200/50 dark:border-neutral-800 mt-auto transition-colors duration-300">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
+            <p class="text-xs text-slate-400 dark:text-neutral-500">
+                &copy; @DateTime.Now.Year - CV Analiz. Tüm hakları saklıdır.
+            </p>
+            <div class="flex space-x-4 text-xs text-slate-400 dark:text-neutral-500">
+                <a href="#" class="hover:text-slate-600 dark:hover:text-neutral-300 transition-colors">Gizlilik Politikası</a>
+                <a href="#" class="hover:text-slate-600 dark:hover:text-neutral-300 transition-colors">Kullanım Şartları</a>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        (function () {
+            var darkIcon = document.getElementById('theme-toggle-dark-icon');
+            var lightIcon = document.getElementById('theme-toggle-light-icon');
+            var toggleBtn = document.getElementById('theme-toggle');
+
+            function syncIcons() {
+                var isDark = document.documentElement.classList.contains('dark');
+                lightIcon.classList.toggle('hidden', !isDark);
+                darkIcon.classList.toggle('hidden', isDark);
+            }
+
+            syncIcons();
+
+            toggleBtn.addEventListener('click', function () {
+                var isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
+                syncIcons();
+            });
+
+            // Kullanıcı manuel seçim yapmadıysa sistem temasını takip et
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+                if (!localStorage.getItem('color-theme')) {
+                    document.documentElement.classList.toggle('dark', e.matches);
+                    syncIcons();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+# ---- .NET / build çıktıları ----
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ---- Node / Tailwind ----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ---- Derlenmiş Tailwind çıktısı (kaynak Styles/tailwind.css'ten üretilir) ----
+# Not: takım tercih ederse bu satırı silip site.css'i commit'leyebilir.
+# Şimdilik üretilmiş dosyayı takip dışı bırakıyoruz.
+# wwwroot/css/site.css
+
+# ---- IDE / editör ----
+.vs/
+.vscode/
+.idea/
+
+# ---- İşletim sistemi ----
+.DS_Store
+Thumbs.db
+
+# ---- Kullanıcı sırları / yerel ayar ----
+*.log
+appsettings.*.local.json
