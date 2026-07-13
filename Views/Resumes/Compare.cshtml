@@ -3,30 +3,30 @@
 }
 
 <div class="max-w-5xl mx-auto pb-12">
-    
+
     <!-- Başlık Alanı -->
     <div class="text-center mb-12">
-        <h1 class="text-3xl font-semibold text-slate-900 tracking-tight">Özgeçmiş Karşılaştırma</h1>
-        <p class="text-sm text-slate-500 mt-2">İki farklı özgeçmişi özellik bazında yan yana inceleyin.</p>
+        <h1 class="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight transition-colors">Özgeçmiş Karşılaştırma</h1>
+        <p class="text-sm text-slate-500 dark:text-neutral-400 mt-2 transition-colors">İki farklı özgeçmişi özellik bazında yan yana inceleyin.</p>
     </div>
 
     <!-- Seçim Alanı (Dropdownlar) -->
     <!-- Not: Backend bağlandığında bu select'ler kullanıcının veritabanındaki dosyalarıyla dolacak -->
     <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-end mb-12 px-4 sm:px-0">
         <div class="text-center">
-            <label class="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">1. Özgeçmiş</label>
-            <select class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 shadow-sm focus:ring-2 focus:ring-slate-200 focus:outline-none appearance-none text-center cursor-pointer hover:border-slate-300 transition-colors">
+            <label class="block text-xs font-medium text-slate-500 dark:text-neutral-400 mb-2 uppercase tracking-wider transition-colors">1. Özgeçmiş</label>
+            <select class="w-full bg-white dark:bg-[#121212] border border-slate-200 dark:border-neutral-800 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-2 focus:ring-slate-200 dark:focus:ring-neutral-700 focus:outline-none appearance-none text-center cursor-pointer hover:border-slate-300 dark:hover:border-neutral-600 transition-colors">
                 <option>Eren_Kurt_Guncel_CV.pdf</option>
             </select>
         </div>
-        
+
         <div class="pb-3 px-4">
-            <span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest text-center block">Vs</span>
+            <span class="text-[10px] font-bold text-slate-300 dark:text-neutral-600 uppercase tracking-widest text-center block transition-colors">Vs</span>
         </div>
-        
+
         <div class="text-center">
-            <label class="block text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">2. Özgeçmiş</label>
-            <select class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 shadow-sm focus:ring-2 focus:ring-slate-200 focus:outline-none appearance-none text-center cursor-pointer hover:border-slate-300 transition-colors">
+            <label class="block text-xs font-medium text-slate-500 dark:text-neutral-400 mb-2 uppercase tracking-wider transition-colors">2. Özgeçmiş</label>
+            <select class="w-full bg-white dark:bg-[#121212] border border-slate-200 dark:border-neutral-800 rounded-2xl px-4 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-2 focus:ring-slate-200 dark:focus:ring-neutral-700 focus:outline-none appearance-none text-center cursor-pointer hover:border-slate-300 dark:hover:border-neutral-600 transition-colors">
                 <option>Eren_Kurt_Eski_CV.pdf</option>
             </select>
         </div>
@@ -34,61 +34,61 @@
 
     <!-- Karşılaştırma Tablosu (Grid Satırları) -->
     <div class="space-y-4">
-        
+
         <!-- Satır 1: Skor -->
-        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-center bg-white p-6 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-            <div class="text-center"><span class="text-5xl font-extrabold text-slate-900 tracking-tight">88</span></div>
-            <div class="w-28 text-center"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">ATS Skoru</span></div>
-            <div class="text-center"><span class="text-5xl font-extrabold text-slate-900 tracking-tight opacity-50">62</span></div>
+        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-center bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
+            <div class="text-center"><span class="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">88</span></div>
+            <div class="w-28 text-center"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">ATS Skoru</span></div>
+            <div class="text-center"><span class="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight opacity-50 transition-colors">62</span></div>
         </div>
 
         <!-- Satır 2: Teknolojiler -->
-        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-center bg-white p-6 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
+        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-center bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
             <div class="flex flex-wrap justify-center gap-2">
-                <span class="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">ASP.NET Core</span>
-                <span class="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">Flutter</span>
-                <span class="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">Firebase</span>
-                <span class="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">Machine Learning</span>
+                <span class="px-3 py-1 bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-full text-xs font-medium text-slate-700 dark:text-neutral-300 transition-colors">ASP.NET Core</span>
+                <span class="px-3 py-1 bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-full text-xs font-medium text-slate-700 dark:text-neutral-300 transition-colors">Flutter</span>
+                <span class="px-3 py-1 bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-full text-xs font-medium text-slate-700 dark:text-neutral-300 transition-colors">Firebase</span>
+                <span class="px-3 py-1 bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-full text-xs font-medium text-slate-700 dark:text-neutral-300 transition-colors">Machine Learning</span>
             </div>
-            <div class="w-28 text-center"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Temel Odak</span></div>
+            <div class="w-28 text-center"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">Temel Odak</span></div>
             <div class="flex flex-wrap justify-center gap-2 opacity-70">
-                <span class="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">C#</span>
-                <span class="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">HTML/CSS</span>
-                <span class="px-3 py-1 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">Algoritmalar</span>
+                <span class="px-3 py-1 bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-full text-xs font-medium text-slate-700 dark:text-neutral-300 transition-colors">C#</span>
+                <span class="px-3 py-1 bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-full text-xs font-medium text-slate-700 dark:text-neutral-300 transition-colors">HTML/CSS</span>
+                <span class="px-3 py-1 bg-slate-50 dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-full text-xs font-medium text-slate-700 dark:text-neutral-300 transition-colors">Algoritmalar</span>
             </div>
         </div>
 
         <!-- Satır 3: Güçlü Yönler -->
-        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-start bg-white p-6 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-            <ul class="text-sm text-slate-600 space-y-3 px-2 sm:px-6">
+        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-start bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
+            <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
                 <li class="flex items-start">
-                    <span class="mr-2 text-green-500 font-bold text-base leading-tight">+</span>
+                    <span class="mr-2 text-green-500 dark:text-green-400 font-bold text-base leading-tight">+</span>
                     <span>Siren Bilişim staj tecrübesi ve aktif mobil uygulama (LoyaltyApp vb.) geliştirme süreçleri net aktarılmış.</span>
                 </li>
                 <li class="flex items-start">
-                    <span class="mr-2 text-green-500 font-bold text-base leading-tight">+</span>
+                    <span class="mr-2 text-green-500 dark:text-green-400 font-bold text-base leading-tight">+</span>
                     <span>Veritabanı yönetimi ve API entegrasyonu modern standartlara uygun.</span>
                 </li>
             </ul>
-            <div class="w-28 text-center pt-1"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Güçlü Yönler</span></div>
-            <ul class="text-sm text-slate-600 space-y-3 px-2 sm:px-6 opacity-70">
+            <div class="w-28 text-center pt-1"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">Güçlü Yönler</span></div>
+            <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 opacity-70 transition-colors">
                 <li class="flex items-start">
-                    <span class="mr-2 text-green-500 font-bold text-base leading-tight">+</span>
+                    <span class="mr-2 text-green-500 dark:text-green-400 font-bold text-base leading-tight">+</span>
                     <span>Yazılım mühendisliği temel eğitim bilgileri okunaklı.</span>
                 </li>
             </ul>
         </div>
 
         <!-- Satır 4: Eksikler -->
-        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-start bg-white p-6 sm:p-8 rounded-[2rem] border border-slate-100 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-            <ul class="text-sm text-slate-600 space-y-3 px-2 sm:px-6">
+        <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-start bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
+            <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
                 <li class="flex items-start">
                     <span class="mr-2 text-red-400 font-bold text-base leading-tight">-</span>
                     <span>Makine öğrenmesi (Random Forest, Isolation Forest vb.) çalışmaları belirtilmiş ancak GitHub veya Kaggle repolarının linkleri eksik.</span>
                 </li>
             </ul>
-            <div class="w-28 text-center pt-1"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Eksikler</span></div>
-            <ul class="text-sm text-slate-600 space-y-3 px-2 sm:px-6 opacity-70">
+            <div class="w-28 text-center pt-1"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">Eksikler</span></div>
+            <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 opacity-70 transition-colors">
                 <li class="flex items-start">
                     <span class="mr-2 text-red-400 font-bold text-base leading-tight">-</span>
                     <span>Kariyer hedefi belirsiz.</span>
