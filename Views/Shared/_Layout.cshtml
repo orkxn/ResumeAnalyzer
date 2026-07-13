@@ -1,51 +1,58 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ResumeAnalyzer</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - CV Analiz</title>
+    
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ResumeAnalyzer.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ResumeAnalyzer</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+<body class="bg-[#fbfbfd] text-slate-900 font-sans antialiased flex flex-col min-h-screen">
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - ResumeAnalyzer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <header class="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-gray-200/50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                
+                <div class="flex-shrink-0 flex items-center">
+                    <a asp-controller="Home" asp-action="Index" class="text-xl font-semibold tracking-tight text-slate-900">
+                        CV<span class="text-slate-500">Analiz</span>
+                    </a>
+                </div>
+
+                <nav class="hidden md:flex space-x-8">
+                    <a asp-controller="Resumes" asp-action="Index" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Özgeçmişler</a>
+                    <a asp-controller="Resumes" asp-action="Upload" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Yeni Yükle</a>
+                    <a asp-controller="Resumes" asp-action="Compare" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Karşılaştır</a>
+                </nav>
+
+                <div class="flex items-center space-x-4">
+                    <a asp-area="Identity" asp-page="/Account/Login" class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">Giriş Yap</a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="text-sm font-medium bg-slate-900 text-white px-4 py-2 rounded-full hover:bg-black transition-all shadow-sm">
+                        Kayıt Ol
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+        @RenderBody()
+    </main>
+
+    <footer class="bg-white border-t border-gray-200/50 mt-auto">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
+            <p class="text-xs text-slate-400">
+                &copy; @DateTime.Now.Year - CV Analiz. Tüm hakları saklıdır.
+            </p>
+            <div class="flex space-x-4 text-xs text-slate-400">
+                <a href="#" class="hover:text-slate-600 transition-colors">Gizlilik Politikası</a>
+                <a href="#" class="hover:text-slate-600 transition-colors">Kullanım Şartları</a>
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
