@@ -1,10 +1,9 @@
-﻿@{
+@{
     ViewData["Title"] = "Ana Sayfa";
 }
 
 <!-- Arka Planda Çok Hafif Dekoratif Bir Parlama (Apple Tarzı) -->
 <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 transition-opacity duration-300" aria-hidden="true">
-    <!-- Karanlık modda parlama renklerini çok daha koyu tonlara (slate-800/700) çektik -->
     <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-slate-200 to-slate-400 dark:from-neutral-800 dark:to-neutral-700 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
 </div>
 
@@ -17,43 +16,22 @@
             <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-900 dark:from-neutral-400 dark:to-neutral-200">yapay zeka ile analiz edin.</span>
         </h1>
         <p class="text-lg leading-8 text-slate-500 dark:text-neutral-400 transition-colors duration-300">
-            PDF veya Word formatındaki dosyanızı yükleyin. Akıllı algoritmalarımız güçlü yönlerinizi, eksiklerinizi ve potansiyel eşleşmelerinizi anında ortaya çıkarsın.
+            Dosyalarınızı sisteme ekleyin. Akıllı algoritmalarımız güçlü yönlerinizi, eksiklerinizi ve potansiyel eşleşmelerinizi anında ortaya çıkarsın.
         </p>
     </div>
 
-    <!-- Dev Sürükle-Bırak Alanı -->
-    <div class="max-w-3xl mx-auto px-4">
-        <!-- Form, veriyi doğrudan ResumesController içindeki Upload aksiyonuna gönderecek -->
-        <form asp-controller="Resumes" asp-action="Upload" method="post" enctype="multipart/form-data" class="relative group">
-            
-            <!-- Kartın arkasındaki animasyonlu gölge (Karanlık moda uyarlandı) -->
-            <div class="absolute -inset-1 bg-gradient-to-r from-slate-200 to-slate-300 dark:from-neutral-800 dark:to-neutral-700 rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-            
-            <!-- Ana Kart: dark:bg-neutral-900/80 ile yarı şeffaf premium siyah oldu -->
-            <div class="relative bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-slate-200 dark:border-neutral-800 rounded-[2rem] p-10 sm:p-16 shadow-2xl shadow-slate-200/50 dark:shadow-black/50 text-center transition-all duration-300">
-                
-                <input type="file" name="resumeFile" accept=".pdf,.doc,.docx" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required />
-                
-                <!-- İkon (Karanlık modda daha okunaklı gri tonu aldı) -->
-                <div class="mx-auto w-20 h-20 mb-6 text-slate-300 dark:text-neutral-600 group-hover:text-slate-800 dark:group-hover:text-neutral-300 transition-colors duration-300 group-hover:scale-110 transform">
-                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-full h-full">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                    </svg>
-                </div>
-                
-                <h3 class="text-xl font-semibold text-slate-900 dark:text-white mb-2 transition-colors duration-300">Yüklemek için tıklayın veya sürükleyin</h3>
-                <p class="text-sm text-slate-500 dark:text-neutral-400 mb-8 transition-colors duration-300">PDF, DOC veya DOCX (Maksimum 5MB)</p>
-                
-                <!-- Buton (Karanlık Modda Tersi Renklere Döner: Beyaz arka plan, siyah yazı) -->
-                <button type="submit" class="relative z-20 inline-flex justify-center items-center px-8 py-3.5 text-sm font-semibold text-white dark:text-neutral-900 bg-slate-900 dark:bg-neutral-200 rounded-full hover:bg-black dark:hover:bg-neutral-300 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
-                    Analize Başla
-                </button>
-            </div>
-        </form>
+    <!-- CTA Alanı (Apple Tarzı) -->
+    <div class="text-center" style="margin-top: 50px; margin-bottom: 100px;">
+        <a asp-controller="Resumes" asp-action="Index" class="inline-flex justify-center items-center px-8 py-3.5 text-sm font-semibold text-white dark:text-neutral-900 bg-slate-900 dark:bg-neutral-200 rounded-full hover:bg-black dark:hover:bg-neutral-300 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform">
+            Analize Başla
+            <svg width="16" height="16" class="ml-2 -mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+        </a>
     </div>
 
     <!-- Güven / Özellik Bandı -->
-    <div class="mt-20 max-w-4xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center border-t border-slate-200/60 dark:border-neutral-800/60 pt-10 transition-colors duration-300">
+    <div class="max-w-4xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center border-t border-slate-200/60 dark:border-neutral-800/60 pt-12 transition-colors duration-300">
         <div>
             <h4 class="text-slate-900 dark:text-white font-semibold mb-1 transition-colors duration-300">Hızlı Sonuç</h4>
             <p class="text-sm text-slate-500 dark:text-neutral-400 transition-colors duration-300">Saniyeler içinde detaylı skorlama.</p>
