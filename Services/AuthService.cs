@@ -30,12 +30,6 @@ namespace ResumeAnalyzer.Services
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
-            if (result.Succeeded)
-            {
-                // Kayıt başarılı olunca doğrudan giriş yapıyoruz
-                await _signInManager.SignInAsync(user, isPersistent: false);
-            }
-
             return result;
         }
 

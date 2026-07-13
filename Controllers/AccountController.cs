@@ -86,11 +86,8 @@ namespace ResumeAnalyzer.Controllers
 
             if (result.Succeeded)
             {
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
-                    return Redirect(returnUrl);
-                }
-                return RedirectToAction("Index", "Home");
+                TempData["RegistrationSuccess"] = "Kayıt başarılı! Giriş yapmak için lütfen bilgilerinizi girin.";
+                return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
             }
 
             foreach (var error in result.Errors)
