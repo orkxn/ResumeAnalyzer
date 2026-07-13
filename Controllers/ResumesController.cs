@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ResumeAnalyzer.Data;
 using ResumeAnalyzer.Services.Interface;
+using ResumeAnalyzer.Models;
 
 namespace ResumeAnalyzer.Controllers
 {
@@ -88,6 +89,40 @@ namespace ResumeAnalyzer.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        // Çoklu CV karşılaştırma sayfası
+        [HttpGet]
+        public async Task<IActionResult> Compare(int? id1, int? id2)
+        {
+            var resumesList = await _context.Resumes
+                .Where(r => r.UserId == "test-user-orkun")
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
+
+            ViewBag.ResumesList = resumesList;
+
+            Resume? resume1 = null;
+            Resume? resume2 = null;
+
+            if (id1.HasValue)
+            {
+                resume1 = await _context.Resumes
+                    .Include(r => r.Analysis)
+                    .FirstOrDefaultAsync(r => r.Id == id1.Value && r.UserId == "test-user-orkun");
+            }
+
+            if (id2.HasValue)
+            {
+                resume2 = await _context.Resumes
+                    .Include(r => r.Analysis)
+                    .FirstOrDefaultAsync(r => r.Id == id2.Value && r.UserId == "test-user-orkun");
+            }
+
+            ViewBag.Resume1 = resume1;
+            ViewBag.Resume2 = resume2;
+
+            return View();
         }
     }
 }
