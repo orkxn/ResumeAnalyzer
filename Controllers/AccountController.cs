@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using ResumeAnalyzer.DTOs;
 using ResumeAnalyzer.Services.Interface;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ResumeAnalyzer.Controllers
 {
+    [EnableRateLimiting("GeneralPolicy")]
     public class AccountController : Controller
     {
         private readonly IAuthService _authService;
