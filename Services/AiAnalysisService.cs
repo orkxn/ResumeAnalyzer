@@ -1,11 +1,10 @@
 using System.Text;
 using System.Text.Json;
 using ResumeAnalyzer.DTOs;
-using ResumeAnalyzer.Services.Interface;
 
 namespace ResumeAnalyzer.Services;
 
-public class AiAnalysisService : IAiAnalysisService
+public class AiAnalysisService
 {
     private readonly HttpClient _httpClient;
     private readonly string _ollamaUrl;
@@ -62,15 +61,15 @@ public class AiAnalysisService : IAiAnalysisService
     6. Asla var olmayan bilgi uydurma (hallüsinasyon yapma); yalnızca metinde geçen veya metinden makul şekilde çıkarılabilen bilgilere dayan.
     7. Aşırı cömert veya aşırı sert puanlama yapma; kriterlere sadık, tutarlı ve gerçekçi bir değerlendirme yap.";
 
-        var requestBody = new OllamaChatRequestDto
+        var requestBody = new
         {
-            Model = _modelName,
-            Format = "json", // Ollama'nın JSON modunu aktif ediyoruz
-            Stream = false,
-            Messages = new List<OllamaMessageDto>
+            model = _modelName,
+            format = "json", // Ollama'nın JSON modunu aktif ediyoruz
+            stream = false,
+            messages = new[]
             {
-                new() { Role = "system", Content = systemPrompt },
-                new() { Role = "user", Content = $"İşte analiz edilecek özgeçmiş metni:\n\n{resumeText}" }
+                new { role = "system", content = systemPrompt },
+                new { role = "user", content = $"İşte analiz edilecek özgeçmiş metni:\n\n{resumeText}" }
             }
         };
 
@@ -122,15 +121,15 @@ public class AiAnalysisService : IAiAnalysisService
     }
     Yanıtında JSON dışında hiçbir metin, açıklama veya markdown bloğu yer almamalıdır.";
 
-        var requestBody = new OllamaChatRequestDto
+        var requestBody = new
         {
-            Model = _modelName,
-            Format = "json",
-            Stream = false,
-            Messages = new List<OllamaMessageDto>
+            model = _modelName,
+            format = "json",
+            stream = false,
+            messages = new[]
             {
-                new() { Role = "system", Content = systemPrompt },
-                new() { Role = "user", Content = $"İşte analiz edilecek belge metni:\n\n{text}" }
+                new { role = "system", content = systemPrompt },
+                new { role = "user", content = $"İşte analiz edilecek belge metni:\n\n{text}" }
             }
         };
 

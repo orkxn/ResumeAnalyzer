@@ -4,22 +4,21 @@ using ResumeAnalyzer.DTOs;
 using ResumeAnalyzer.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
-using ResumeAnalyzer.Services.Interface;
 
 namespace ResumeAnalyzer.Services;
 
-public class ResumeService : IResumeService
+public class ResumeService
 {
-    private readonly ITextExtractorService _textExtractor;
-    private readonly IGoogleDriveService _driveService;
-    private readonly IAiAnalysisService _aiService;
+    private readonly TextExtractorService _textExtractor;
+    private readonly GoogleDriveService _driveService;
+    private readonly AiAnalysisService _aiService;
     private readonly ApplicationDbContext _context;
     private readonly IMemoryCache _cache;
 
     public ResumeService(
-        ITextExtractorService textExtractor,
-        IGoogleDriveService driveService,
-        IAiAnalysisService aiService,
+        TextExtractorService textExtractor,
+        GoogleDriveService driveService,
+        AiAnalysisService aiService,
         ApplicationDbContext context,
         IMemoryCache cache)
     {
@@ -167,12 +166,12 @@ public class ResumeService : IResumeService
         return resume;
     }
 
-    public async Task<bool> DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default)
+    public async Task DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default)
     {
         var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId, cancellationToken);
         if (resume == null)
         {
-            return false;
+            throw new KeyNotFoundException("Silmek istediğiniz özgeçmiş bulunamadı veya silme yetkiniz yok.");
         }
 
         _context.Resumes.Remove(resume);
@@ -181,7 +180,5 @@ public class ResumeService : IResumeService
         // Önbelleği temizle
         _cache.Remove($"resumes_list_{userId}");
         _cache.Remove($"resume_detail_{id}");
-
-        return true;
     }
 }
