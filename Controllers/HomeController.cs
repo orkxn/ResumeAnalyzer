@@ -69,7 +69,7 @@ public class HomeController : Controller
             var exception = exceptionHandlerPathFeature.Error;
             _logger.LogError(exception, "Global Exception Handler: '{Path}' adresinde unhandled hata yakalandı.", exceptionHandlerPathFeature.Path);
 
-            // Özel istisna tiplerine göre dostane mesajlar ve HTTP kodları ata
+            // özel istisna tiplerine göre dostane mesajlar ve HTTP kodları ata
             if (exception is UnauthorizedAccessException)
             {
                 model.Title = "Yetkisiz Erişim (403)";
