@@ -10,12 +10,21 @@
 
     <div class="bg-white dark:bg-[#121212] p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-black/30 border border-gray-100 dark:border-neutral-800 transition-colors">
         <form asp-controller="Resumes" asp-action="Upload" method="post" enctype="multipart/form-data" class="space-y-6">
-            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
-            {
-                <div class="p-3.5 bg-white border border-gray-300 text-black rounded-2xl text-xs text-center font-medium shadow-sm">
-                    <div asp-validation-summary="ModelOnly" class="list-none text-black"></div>
-                </div>
+            <!-- Hata Bilgilendirme Kutusu (Hem server hem de client tarafı için) -->
+            @{
+                var hasErrors = !ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0;
             }
+            <div id="jsErrorContainer" class="p-3.5 bg-white border border-gray-300 text-black rounded-2xl text-xs text-center font-medium shadow-sm @(hasErrors ? "" : "hidden")">
+                <ul id="jsErrorList" class="list-none text-black">
+                    @if (hasErrors && ViewData.ModelState[""] != null)
+                    {
+                        @foreach (var error in ViewData.ModelState[""]!.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
 
             <div class="border-2 border-dashed border-gray-200 dark:border-neutral-700 rounded-2xl p-12 text-center hover:bg-[#fbfbfd] dark:hover:bg-neutral-800/50 hover:border-slate-300 dark:hover:border-neutral-600 transition-all cursor-pointer relative group">
 
@@ -56,7 +65,10 @@
                 // Uzantı doğrulaması
                 var allowedExtensions = ['.PDF', '.DOC', '.DOCX'];
                 if (!allowedExtensions.includes(fileExtension)) {
-                    alert("Sadece PDF veya Word (.doc, .docx) formatındaki dosyaları yükleyebilirsiniz.");
+                    // Hata kutusunu güncelle ve göster
+                    document.getElementById('jsErrorList').innerHTML = '<li>Sadece PDF veya Word (.doc, .docx) formatındaki dosyaları yükleyebilirsiniz.</li>';
+                    document.getElementById('jsErrorContainer').classList.remove('hidden');
+
                     e.target.value = ''; // Seçimi sıfırla
                     
                     // Arayüzü eski haline getir
@@ -67,6 +79,9 @@
                     iconWrapper.classList.add('text-gray-300', 'dark:text-neutral-600', 'group-hover:text-slate-800', 'dark:group-hover:text-neutral-300');
                     return;
                 }
+
+                // Geçerli dosya seçildiğinde hata kutusunu gizle
+                document.getElementById('jsErrorContainer').classList.add('hidden');
 
                 var fileSize = (file.size / 1024 / 1024).toFixed(2) + " MB";
 
