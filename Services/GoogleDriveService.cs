@@ -20,9 +20,9 @@ public class GoogleDriveService
 
     private async Task<DriveService> GetDriveServiceAsync()
     {
-        string clientId = _configuration["GoogleDrive:ClientId"] ?? throw new InvalidOperationException("ClientId bulunamadı.");
-        string clientSecret = _configuration["GoogleDrive:ClientSecret"] ?? throw new InvalidOperationException("ClientSecret bulunamadı.");
-        string refreshToken = _configuration["GoogleDrive:RefreshToken"] ?? throw new InvalidOperationException("RefreshToken bulunamadı.");
+        string clientId = _configuration["GOOGLE_DRIVE_CLIENT_ID"] ?? _configuration["GoogleDrive:ClientId"] ?? throw new InvalidOperationException("ClientId bulunamadı.");
+        string clientSecret = _configuration["GOOGLE_DRIVE_CLIENT_SECRET"] ?? _configuration["GoogleDrive:ClientSecret"] ?? throw new InvalidOperationException("ClientSecret bulunamadı.");
+        string refreshToken = _configuration["GOOGLE_DRIVE_REFRESH_TOKEN"] ?? _configuration["GoogleDrive:RefreshToken"] ?? throw new InvalidOperationException("RefreshToken bulunamadı.");
 
         var clientSecrets = new ClientSecrets
         {
