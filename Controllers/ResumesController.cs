@@ -25,13 +25,25 @@ namespace ResumeAnalyzer.Controllers
         private string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         // Kullanıcının mevcut özgeçmişlerini listeleyeceği sayfa
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
+            if (page < 1) page = 1;
+
             // Servis katmanından kullanıcının özgeçmişlerini al (Analysis dahil, tarihe göre sıralı)
             var resumes = await _resumeService.GetUserResumesAsync(CurrentUserId, HttpContext.RequestAborted);
 
-            // Liste görünümü için ViewModel'e dönüştür
-            var viewModels = resumes
+            int totalItems = resumes.Count;
+            int pageSize = 6;
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            if (totalPages > 0 && page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var paginatedResumes = resumes
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(r => new ResumeListViewModel
                 {
                     Id = r.Id,
@@ -41,7 +53,14 @@ namespace ResumeAnalyzer.Controllers
                 })
                 .ToList();
 
-            return View(viewModels);
+            var viewModel = new ResumeIndexViewModel
+            {
+                Resumes = paginatedResumes,
+                CurrentPage = page,
+                TotalPages = totalPages
+            };
+
+            return View(viewModel);
         }
 
         // Yeni CV yükleme sayfasını (Form) gösteren Action

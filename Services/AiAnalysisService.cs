@@ -62,9 +62,9 @@ public class AiAnalysisService
     5. Eğer gönderilen metin bir özgeçmiş değilse veya analiz edilemeyecek kadar yetersizse (ör. boş, anlamsız veya alakasız metin), score değerini 0 ver, diğer tüm liste alanlarını boş dizi ([]) olarak döndür.
     6. Asla var olmayan bilgi uydurma (hallüsinasyon yapma); yalnızca metinde geçen veya metinden makul şekilde çıkarılabilen bilgilere dayan.
     7. Aşırı cömert veya aşırı sert puanlama yapma; kriterlere sadık, tutarlı ve gerçekçi bir değerlendirme yap.
-    8. YANIT DİLİ KESİNLİKLE VE TAMAMEN TÜRKÇE OLMALIDIR.";
+    8. YANIT DİLİ KESİNLİKLE VE TAMAMEN TÜRKÇE OLMALIDIR. Başka dillerden (İngilizce, Çince, Korece vb.) hiçbir kelime veya terim kullanma, Türkçe karşılıklarını yaz. Karışık dilli ifadeler oluşturma.";
 
-            userPrompt = $"[ZORUNLU TALİMAT]: Lütfen aşağıdaki özgeçmişi analiz et ve KESİNLİKLE %100 TÜRKÇE bir JSON yanıt üret. Kesinlikle İngilizce hiçbir kelime, cümle veya açıklama yazma.\n\nÖzgeçmiş Metni:\n{resumeText}";
+            userPrompt = $"[ZORUNLU TALİMAT]: Lütfen aşağıdaki özgeçmişi analiz et ve KESİNLİKLE %100 TÜRKÇE bir JSON yanıt üret. Kesinlikle İngilizce, Çince, Korece veya başka bir dilde hiçbir kelime, terim, cümle veya açıklama yazma. Tüm terimleri Türkçe olarak yaz.\n\nÖzgeçmiş Metni:\n{resumeText}";
         }
         else
         {
@@ -102,9 +102,9 @@ public class AiAnalysisService
     5. If the sent text is not a resume or is insufficient for analysis, score must be 0, list fields empty arrays ([]).
     6. Never hallucinate information; base everything only on text present or reasonably deducible.
     7. Do not be overly generous or harsh; be realistic and consistent.
-    8. THE LANGUAGE OF THE ENTIRE RESPONSE MUST BE STRICLY ENGLISH.";
+    8. THE LANGUAGE OF THE ENTIRE RESPONSE MUST BE STRICLY ENGLISH. Do not use any words or terms from other languages (Turkish, Chinese, Korean, etc.). Do not create mixed-language sentences.";
 
-            userPrompt = $"[MANDATORY INSTRUCTION]: Please analyze the following resume and produce a response strictly 100% in ENGLISH. Do not use Turkish or any other language.\n\nResume Text:\n{resumeText}";
+            userPrompt = $"[MANDATORY INSTRUCTION]: Please analyze the following resume and produce a response strictly 100% in ENGLISH. Do not use Turkish, Chinese, Korean, or any other language.\n\nResume Text:\n{resumeText}";
         }
 
         var requestBody = new
@@ -112,6 +112,10 @@ public class AiAnalysisService
             model = _modelName,
             format = "json", // Ollama'nın JSON modunu aktif ediyoruz
             stream = false,
+            options = new
+            {
+                temperature = 0.1
+            },
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },

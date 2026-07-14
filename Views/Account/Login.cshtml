@@ -12,14 +12,14 @@
     <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="space-y-5">
         @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
         {
-            <div class="p-3.5 bg-white border border-gray-300 text-black rounded-2xl text-xs text-center font-medium shadow-sm">
-                <div asp-validation-summary="ModelOnly" class="list-none text-black"></div>
+            <div class="p-4 bg-red-600 dark:bg-red-800 text-white rounded-2xl text-xs text-center font-semibold shadow-md border border-transparent">
+                <div asp-validation-summary="ModelOnly" class="list-none text-white"></div>
             </div>
         }
 
         @if (TempData["RegistrationSuccess"] != null)
         {
-            <div class="p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-2xl text-xs text-center font-medium">
+            <div class="p-4 bg-green-100 dark:bg-green-800 border border-green-200 dark:border-green-700 text-green-900 dark:text-white rounded-2xl text-xs text-center font-semibold shadow-sm">
                 @TempData["RegistrationSuccess"]
             </div>
         }
