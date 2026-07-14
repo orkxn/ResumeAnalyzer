@@ -19,12 +19,15 @@ public class AiAnalysisService
 
     public async Task<AnalysisResponseDto> AnalyzeResumeAsync(string resumeText, CancellationToken cancellationToken = default)
     {
-        var systemPrompt = @"# ROL
+        var language = DetectLanguage(resumeText);
+        string systemPrompt;
+        string userPrompt;
+
+        if (language == "tr")
+        {
+            systemPrompt = @"# ROL
     Sen 15 yıllık deneyime sahip, kıdemli bir İK Direktörü ve Özgeçmiş (CV) Analiz uzmanısın.
     Görevin, sana verilen özgeçmiş metnini objektif, tutarlı ve profesyonel kriterlere göre analiz etmek.
-
-    # DİL UYUMU (HAYATİ ÖNEMDE)
-    - Yüklenen özgeçmiş metni hangi dilde yazılmış ise (İngilizce, Türkçe, Almanca vb.), üreteceğin JSON yanıtındaki TÜM metinsel açıklamalar da (summary, strengths, weaknesses, suggestions, missingElements, notes) kesinlikle ve tamamen o dilde (aynı dilde) olmalıdır. Başka dilde yanıt yazma. Örneğin özgeçmiş İngilizce ise yanıt da İngilizce olmalıdır.
 
     # ÇIKTI FORMATI (ZORUNLU)
     Yanıtın SADECE ve SADECE aşağıdaki JSON şemasına birebir uyan geçerli bir JSON nesnesi olmalıdır.
@@ -52,18 +55,67 @@ public class AiAnalysisService
     1. İçerik ve Deneyim Kalitesi (%35): İş deneyimlerinin somut, ölçülebilir sonuçlarla (rakamlar, yüzdeler, projeler) anlatılıp anlatılmadığı.
     2. Yapı ve Okunabilirlik (%20): Bölümlerin mantıklı sıralanışı, tutarlı tarih formatları, gereksiz tekrarların olmaması.
     3. Anahtar Kelime ve Yetkinlik Uyumu (%20): Sektöre/pozisyona uygun teknik ve kişisel yetkinliklerin belirtilmiş olması.
-    4. Netlik ve Öz Anlatım (%15): Gereksiz uzun cümleler, klişe ifadeler (""takım çalışmasına yatkın"" gibi somut kanıtsız ifadeler) yerine net ve kanıta dayalı anlatım.
+    4. Netlik ve Öz Anlatım (%15): Gereksiz uzun cümleler, klişe ifadeler yerine net ve kanıta dayalı anlatım.
     5. Profesyonel Sunum (%10): Dil bilgisi hataları, yazım tutarlılığı, iletişim bilgilerinin eksiksizliği.
 
     # KURALLAR
     1. 'score' ve 'atsCompatibility.score' değerleri 0-100 arasında birer TAM SAYI olmalıdır. Ondalık kullanma.
-    2. Tüm metin alanları özgeçmiş belgesiyle aynı dilde ve profesyonel bir dille yazılmalıdır.
-    3. 'strengths' ve 'weaknesses' listelerinde en az 2, en fazla 5 madde olmalı. Genel geçer ifadeler yerine CV'deki somut bilgilere referans ver (örn. CV Türkçe ise ""3 yıllık .NET deneyimi net şekilde belirtilmiş"", İngilizce ise ""3 years of .NET experience is clearly stated"" gibi).
+    2. Tüm metin alanları TÜRKÇE ve profesyonel bir dille yazılmalıdır.
+    3. 'strengths' ve 'weaknesses' listelerinde en az 2, en fazla 5 madde olmalı. Genel geçer ifadeler yerine CV'deki somut bilgilere referans ver (örn: ""3 yıllık .NET deneyimi net şekilde belirtilmiş"" gibi; sadece ""deneyimli"" deme).
     4. 'suggestions' listesindeki her öneri, adayın doğrudan uygulayabileceği somut bir eylem içermeli (örn: ""Proje bölümüne kullanılan teknolojileri ve elde edilen ölçülebilir sonucu ekleyin"").
     5. Eğer gönderilen metin bir özgeçmiş değilse veya analiz edilemeyecek kadar yetersizse (ör. boş, anlamsız veya alakasız metin), score değerini 0 ver, diğer tüm liste alanlarını boş dizi ([]) olarak döndür ve 'summary' alanında bunun bir özgeçmiş olmadığını Türkçe olarak belirt.
     6. Asla var olmayan bilgi uydurma (hallüsinasyon yapma); yalnızca metinde geçen veya metinden makul şekilde çıkarılabilen bilgilere dayan.
     7. Aşırı cömert veya aşırı sert puanlama yapma; kriterlere sadık, tutarlı ve gerçekçi bir değerlendirme yap.
-    8. YANIT DİLİ KESİNLİKLE VE TAMAMEN YÜKLENEN ÖZGEÇMİŞİN DİLİYLE BİREBİR AYNI OLMALIDIR.";
+    8. YANIT DİLİ KESİNLİKLE VE TAMAMEN TÜRKÇE OLMALIDIR.";
+
+            userPrompt = $"[ZORUNLU TALİMAT]: Lütfen aşağıdaki özgeçmişi analiz et ve KESİNLİKLE %100 TÜRKÇE bir JSON yanıt üret. Kesinlikle İngilizce hiçbir kelime, cümle veya açıklama yazma.\n\nÖzgeçmiş Metni:\n{resumeText}";
+        }
+        else
+        {
+            systemPrompt = @"# ROLE
+    You are a senior HR Director and Resume (CV) Analysis expert with 15 years of experience.
+    Your task is to analyze the provided resume text objectively, consistently, and according to professional criteria.
+
+    # OUTPUT FORMAT (MANDATORY)
+    Your response must be ONLY a valid JSON object matching the schema below.
+    - Do not write any text outside of the JSON (no explanation, introduction, or markdown block wrapping).
+    - Do not use markdown code block tags like ```json, ```.
+    - The output must be pure JSON so it can be parsed directly.
+
+    # JSON SCHEMA
+    {
+      ""score"": 85,
+      ""summary"": ""A brief 2-3 sentence summary of the candidate's profile"",
+      ""strengths"": [""Strength 1"", ""Strength 2"", ""Strength 3""],
+      ""weaknesses"": [""Weakness 1"", ""Weakness 2""],
+      ""suggestions"": [""Actionable suggestion 1"", ""Actionable suggestion 2""],
+      ""missingElements"": [""Missing standard section or detail in CV""],
+      ""atsCompatibility"": {
+        ""score"": 70,
+        ""notes"": ""Short note on ATS compatibility""
+      }
+    }
+
+    # EVALUATION CRITERIA
+    Consider the following weighted criteria when calculating the 'score':
+    1. Content and Experience Quality (35%): Work experiences described with concrete, measurable results (numbers, percentages, projects).
+    2. Structure and Readability (20%): Logical ordering of sections, consistent date formats, absence of redundant repetitions.
+    3. Keyword and Competency Fit (20%): Technical and soft skills suitable for the industry/position are specified.
+    4. Clarity and Conciseness (15%): Clear, evidence-based descriptions instead of overly long sentences or clichés.
+    5. Professional Presentation (10%): Grammatical accuracy, spelling consistency, completeness of contact information.
+
+    # RULES
+    1. 'score' and 'atsCompatibility.score' must be integers between 0 and 100. Do not use decimals.
+    2. All text fields must be in ENGLISH and written in a professional tone.
+    3. 'strengths' and 'weaknesses' lists must have between 2 and 5 items. Refer to concrete info in the CV.
+    4. Each suggestion must contain a concrete action the candidate can apply directly.
+    5. If the sent text is not a resume or is insufficient for analysis, score must be 0, list fields empty arrays ([]), and state in 'summary' that it is not a resume.
+    6. Never hallucinate information; base everything only on text present or reasonably deducible.
+    7. Do not be overly generous or harsh; be realistic and consistent.
+    8. THE LANGUAGE OF THE ENTIRE RESPONSE MUST BE STRICLY ENGLISH.";
+
+            userPrompt = $"[MANDATORY INSTRUCTION]: Please analyze the following resume and produce a response strictly 100% in ENGLISH. Do not use Turkish or any other language.\n\nResume Text:\n{resumeText}";
+        }
 
         var requestBody = new
         {
@@ -73,10 +125,7 @@ public class AiAnalysisService
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },
-                new { role = "user", content = $"[DİL UYUMU / LANGUAGE MATCH REQUIRED]:\n" +
-                                               $"Bu özgeçmiş hangi dilde yazıldıysa (Türkçe, İngilizce vb.), JSON yanıtındaki tüm açıklamaları (summary, strengths, weaknesses, suggestions, notes) KESİNLİKLE o dilde yaz.\n" +
-                                               $"If this CV is in English, respond in English. If this CV is in Turkish, respond in Turkish. Do not translate the response to English if the CV is in Turkish.\n\n" +
-                                               $"Analiz edilecek Özgeçmiş Metni / Resume Text to Analyze:\n{resumeText}" }
+                new { role = "user", content = userPrompt }
             }
         };
 
@@ -165,6 +214,22 @@ public class AiAnalysisService
         }
 
         return false;
+    }
+
+    private string DetectLanguage(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return "tr";
+
+        // Türkçe'ye özgü harfler ve yaygın Türkçe kelimelerin varlığına bakarız
+        string[] turkishIndicators = { "ı", "ğ", "ü", "ş", "ö", "ç", "İ", "Ğ", "Ü", "Ş", "Ö", "Ç", " ve ", " bir ", " için ", " ile ", " olarak ", " mezun ", " tecrübe ", " deneyim " };
+        foreach (var indicator in turkishIndicators)
+        {
+            if (text.Contains(indicator, StringComparison.OrdinalIgnoreCase))
+            {
+                return "tr";
+            }
+        }
+        return "en";
     }
 }
 
