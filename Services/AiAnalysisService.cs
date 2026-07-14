@@ -41,15 +41,9 @@ public class AiAnalysisService
     # JSON ŞEMASI
     {
     ""score"": 85,
-    ""summary"": ""Adayın genel profilini 2-3 cümlede özetleyen kısa değerlendirme"",
     ""strengths"": [""Güçlü yön 1"", ""Güçlü yön 2"", ""Güçlü yön 3""],
     ""weaknesses"": [""Zayıf yön 1"", ""Zayıf yön 2""],
-    ""suggestions"": [""Somut ve uygulanabilir öneri 1"", ""Somut ve uygulanabilir öneri 2""],
-    ""missingElements"": [""CV'de eksik olan standart bir bölüm veya bilgi""],
-    ""atsCompatibility"": {
-        ""score"": 70,
-        ""notes"": ""ATS (Aday Takip Sistemi) uyumluluğuna dair kısa not""
-    }
+    ""suggestions"": [""Somut ve uygulanabilir öneri 1"", ""Somut ve uygulanabilir öneri 2""]
     }
 
     # DEĞERLENDİRME KRİTERLERİ
@@ -61,11 +55,11 @@ public class AiAnalysisService
     5. Profesyonel Sunum (%10): Dil bilgisi hataları, yazım tutarlılığı, iletişim bilgilerinin eksiksizliği.
 
     # KURALLAR
-    1. 'score' ve 'atsCompatibility.score' değerleri 0-100 arasında birer TAM SAYI olmalıdır. Ondalık kullanma.
+    1. 'score' değeri 0-100 arasında bir TAM SAYI olmalıdır. Ondalık kullanma.
     2. Tüm metin alanları TÜRKÇE ve profesyonel bir dille yazılmalıdır.
     3. 'strengths' ve 'weaknesses' listelerinde en az 2, en fazla 5 madde olmalı. Genel geçer ifadeler yerine CV'deki somut bilgilere referans ver (örn: ""3 yıllık .NET deneyimi net şekilde belirtilmiş"" gibi; sadece ""deneyimli"" deme).
-    4. 'suggestions' listesindeki her öneri, adayın doğrudan uygulayabileceği somut bir eylem içermeli (örn: ""Proje bölümüne kullanılan teknolojileri ve elde edilen ölçülebilir sonucu ekleyin"").
-    5. Eğer gönderilen metin bir özgeçmiş değilse veya analiz edilemeyecek kadar yetersizse (ör. boş, anlamsız veya alakasız metin), score değerini 0 ver, diğer tüm liste alanlarını boş dizi ([]) olarak döndür ve 'summary' alanında bunun bir özgeçmiş olmadığını Türkçe olarak belirt.
+    4. 'suggestions' listesindeki her öneri, adayın doğrudan uygulayabileceği somut bir eylem içermeli.
+    5. Eğer gönderilen metin bir özgeçmiş değilse veya analiz edilemeyecek kadar yetersizse (ör. boş, anlamsız veya alakasız metin), score değerini 0 ver, diğer tüm liste alanlarını boş dizi ([]) olarak döndür.
     6. Asla var olmayan bilgi uydurma (hallüsinasyon yapma); yalnızca metinde geçen veya metinden makul şekilde çıkarılabilen bilgilere dayan.
     7. Aşırı cömert veya aşırı sert puanlama yapma; kriterlere sadık, tutarlı ve gerçekçi bir değerlendirme yap.
     8. YANIT DİLİ KESİNLİKLE VE TAMAMEN TÜRKÇE OLMALIDIR.";
@@ -87,15 +81,9 @@ public class AiAnalysisService
     # JSON SCHEMA
     {
       ""score"": 85,
-      ""summary"": ""A brief 2-3 sentence summary of the candidate's profile"",
       ""strengths"": [""Strength 1"", ""Strength 2"", ""Strength 3""],
       ""weaknesses"": [""Weakness 1"", ""Weakness 2""],
-      ""suggestions"": [""Actionable suggestion 1"", ""Actionable suggestion 2""],
-      ""missingElements"": [""Missing standard section or detail in CV""],
-      ""atsCompatibility"": {
-        ""score"": 70,
-        ""notes"": ""Short note on ATS compatibility""
-      }
+      ""suggestions"": [""Actionable suggestion 1"", ""Actionable suggestion 2""]
     }
 
     # EVALUATION CRITERIA
@@ -107,11 +95,11 @@ public class AiAnalysisService
     5. Professional Presentation (10%): Grammatical accuracy, spelling consistency, completeness of contact information.
 
     # RULES
-    1. 'score' and 'atsCompatibility.score' must be integers between 0 and 100. Do not use decimals.
+    1. 'score' must be an integer between 0 and 100. Do not use decimals.
     2. All text fields must be in ENGLISH and written in a professional tone.
     3. 'strengths' and 'weaknesses' lists must have between 2 and 5 items. Refer to concrete info in the CV.
     4. Each suggestion must contain a concrete action the candidate can apply directly.
-    5. If the sent text is not a resume or is insufficient for analysis, score must be 0, list fields empty arrays ([]), and state in 'summary' that it is not a resume.
+    5. If the sent text is not a resume or is insufficient for analysis, score must be 0, list fields empty arrays ([]).
     6. Never hallucinate information; base everything only on text present or reasonably deducible.
     7. Do not be overly generous or harsh; be realistic and consistent.
     8. THE LANGUAGE OF THE ENTIRE RESPONSE MUST BE STRICLY ENGLISH.";
