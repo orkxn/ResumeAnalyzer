@@ -133,7 +133,11 @@ public class AiAnalysisService
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(_ollamaUrl, content, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new HttpRequestException($"Ollama API error: {response.StatusCode} - {errorContent}");
+        }
 
         var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
         
@@ -197,7 +201,11 @@ public class AiAnalysisService
         var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync(_ollamaUrl, content, cancellationToken);
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new HttpRequestException($"Ollama API error: {response.StatusCode} - {errorContent}");
+        }
 
         var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
         
