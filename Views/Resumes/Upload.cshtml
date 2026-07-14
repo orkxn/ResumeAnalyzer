@@ -34,7 +34,7 @@
                 </div>
             </div>
 
-            <div class="border-2 border-dashed border-gray-200 dark:border-neutral-700 rounded-2xl p-12 text-center hover:bg-[#fbfbfd] dark:hover:bg-neutral-800/50 hover:border-slate-300 dark:hover:border-neutral-600 transition-all cursor-pointer relative group">
+            <div id="dropZone" class="border-2 border-dashed border-gray-200 dark:border-neutral-700 rounded-2xl p-12 text-center hover:bg-[#fbfbfd] dark:hover:bg-neutral-800/50 hover:border-slate-300 dark:hover:border-neutral-600 transition-all cursor-pointer relative group">
 
                 <input type="file" id="fileInput" name="resumeFile" accept=".pdf,.doc,.docx" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required />
 
@@ -90,6 +90,34 @@
 
 @section Scripts {
     <script>
+        var dropZone = document.getElementById('dropZone');
+        var fileInput = document.getElementById('fileInput');
+        var uploadTitle = document.getElementById('uploadTitle');
+
+        // Dosya sürüklenirken
+        fileInput.addEventListener('dragenter', function () {
+            dropZone.classList.add('border-slate-400', 'bg-slate-50', 'dark:bg-neutral-800/40');
+            uploadTitle.innerText = "Yüklemek için dosyayı bırakın";
+        });
+
+        fileInput.addEventListener('dragover', function (e) {
+            e.preventDefault();
+        });
+
+        // Dosya sürüklenmekten vazgeçildiğinde / çıkıldığında
+        fileInput.addEventListener('dragleave', function () {
+            dropZone.classList.remove('border-slate-400', 'bg-slate-50', 'dark:bg-neutral-800/40');
+            if (fileInput.files && fileInput.files.length > 0) {
+                uploadTitle.innerText = fileInput.files[0].name;
+            } else {
+                uploadTitle.innerText = "Dosya seçmek için tıklayın veya sürükleyin";
+            }
+        });
+
+        fileInput.addEventListener('drop', function () {
+            dropZone.classList.remove('border-slate-400', 'bg-slate-50', 'dark:bg-neutral-800/40');
+        });
+
         // Dosya Seçim Listener'ı
         document.getElementById('fileInput').addEventListener('change', function (e) {
             var file = e.target.files[0];
