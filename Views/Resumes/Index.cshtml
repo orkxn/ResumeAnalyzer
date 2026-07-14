@@ -41,7 +41,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-0">
             @foreach (var resume in Model)
             {
-                <div class="bg-white dark:bg-[#121212] border border-slate-200/60 dark:border-neutral-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                <div id="card-@resume.Id" class="bg-white dark:bg-[#121212] border border-slate-200/60 dark:border-neutral-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
                     <div class="flex items-start justify-between mb-4">
                         <div class="p-3 bg-slate-50 dark:bg-neutral-800 rounded-2xl group-hover:bg-slate-100 dark:group-hover:bg-neutral-700 transition-colors">
                             <svg width="24" height="24" class="text-slate-400 dark:text-neutral-300" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -75,24 +75,12 @@
                             Analizi İncele
                         </a>
                         
-                        <form asp-controller="Resumes" asp-action="Delete" asp-route-id="@resume.Id" method="post" class="delete-form inline-block m-0 p-0">
-                            <div class="relative inline-block">
-                                <button type="button" class="delete-btn p-2 bg-slate-50 dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-400 border border-transparent dark:border-neutral-700 rounded-xl transition-colors" title="Sil">
-                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                    </svg>
-                                </button>
-                                
-                                <!-- Custom Confirm Bubble -->
-                                <div class="confirm-bubble hidden absolute bottom-full right-0 mb-2.5 w-52 bg-slate-900 dark:bg-neutral-950 border border-slate-950 dark:border-neutral-800 p-4 rounded-2xl shadow-2xl z-20 text-center">
-                                    <p class="text-xs font-semibold text-white mb-3 leading-relaxed">Silmek istediğinize emin misiniz?</p>
-                                    <div class="flex gap-2 justify-center">
-                                        <button type="button" class="confirm-yes px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl text-[11px] transition-colors">Evet</button>
-                                        <button type="button" class="confirm-no px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold rounded-xl text-[11px] transition-colors">Hayır</button>
-                                    </div>
-                                    <div class="absolute top-full right-3.5 border-8 border-transparent border-t-slate-900 dark:border-t-neutral-950"></div>
-                                </div>
-                            </div>
+                        <form id="deleteForm-@resume.Id" asp-controller="Resumes" asp-action="Delete" asp-route-id="@resume.Id" method="post" class="delete-form inline-block m-0 p-0">
+                            <button type="button" class="p-2 bg-slate-50 dark:bg-neutral-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-400 border border-transparent dark:border-neutral-700 rounded-xl transition-colors" title="Sil" onclick="triggerDelete(@resume.Id, '@resume.FileName')">
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                </svg>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -101,55 +89,97 @@
     }
 </div>
 
+<!-- Floating Undo Toast Notification -->
+<div id="undoToast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900 dark:bg-neutral-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-6 z-50 transition-all duration-300 translate-y-20 opacity-0 pointer-events-none w-[90%] max-w-md border border-slate-800 dark:border-neutral-800">
+    <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        <span id="undoToastText" class="text-xs font-semibold truncate max-w-[200px] sm:max-w-[280px]">Özgeçmiş silindi.</span>
+    </div>
+    <button id="undoButton" class="text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors shrink-0 uppercase tracking-wider">Geri Al</button>
+</div>
+
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Tüm silme butonlarını seç
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    // Aynı karttaki veya diğer kartlardaki açık balonları kapat
-                    closeAllConfirmBubbles();
-                    
-                    // Bu butonun ilişkili olduğu balonu göster
-                    const bubble = this.nextElementSibling;
-                    if (bubble) {
-                        bubble.classList.remove('hidden');
-                    }
-                });
-            });
+        let pendingDeleteId = null;
+        let pendingDeleteTimeout = null;
 
-            // "Hayır" butonları
-            document.querySelectorAll('.confirm-no').forEach(btn => {
-                btn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    const bubble = this.closest('.confirm-bubble');
-                    if (bubble) {
-                        bubble.classList.add('hidden');
-                    }
-                });
-            });
+        function triggerDelete(resumeId, fileName) {
+            // Eğer bekleyen başka bir silme varsa hemen gönder
+            if (pendingDeleteId !== null) {
+                executePendingDelete();
+            }
 
-            // "Evet" butonları (formu gönderir)
-            document.querySelectorAll('.confirm-yes').forEach(btn => {
-                btn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    const form = this.closest('.delete-form');
-                    if (form) {
-                        form.submit();
-                    }
-                });
-            });
+            // Kartı arayüzde animasyonla gizle
+            const card = document.getElementById('card-' + resumeId);
+            if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    card.classList.add('hidden');
+                }, 300);
+            }
 
-            // Sayfa genelinde tıklama yapıldığında tüm balonları kapat
-            document.addEventListener('click', function () {
-                closeAllConfirmBubbles();
-            });
+            pendingDeleteId = resumeId;
 
-            function closeAllConfirmBubbles() {
-                document.querySelectorAll('.confirm-bubble').forEach(bubble => {
-                    bubble.classList.add('hidden');
-                });
+            // Toast bildirimini güncelle ve göster
+            const toast = document.getElementById('undoToast');
+            const toastText = document.getElementById('undoToastText');
+            toastText.innerText = `"${fileName}" adlı özgeçmiş silinmiştir.`;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+
+            // 5 saniye sonra sunucuya silme isteği gönder
+            pendingDeleteTimeout = setTimeout(() => {
+                executePendingDelete();
+            }, 5000);
+        }
+
+        function executePendingDelete() {
+            if (pendingDeleteId === null) return;
+
+            const form = document.getElementById('deleteForm-' + pendingDeleteId);
+            if (form) {
+                form.submit();
+            }
+
+            pendingDeleteId = null;
+            if (pendingDeleteTimeout) {
+                clearTimeout(pendingDeleteTimeout);
+                pendingDeleteTimeout = null;
+            }
+        }
+
+        // Geri Al buton dinleyicisi
+        document.getElementById('undoButton').addEventListener('click', function () {
+            if (pendingDeleteId === null) return;
+
+            // Zamanlayıcıyı iptal et
+            clearTimeout(pendingDeleteTimeout);
+            pendingDeleteTimeout = null;
+
+            // Kartı geri göster ve canlandır
+            const card = document.getElementById('card-' + pendingDeleteId);
+            if (card) {
+                card.classList.remove('hidden');
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                }, 50);
+            }
+
+            // Toast'ı gizle
+            const toast = document.getElementById('undoToast');
+            toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+
+            pendingDeleteId = null;
+        });
+
+        // Kullanıcı sayfayı kapatır/yenilerse bekleyen silmeyi anında çalıştır
+        window.addEventListener('beforeunload', function () {
+            if (pendingDeleteId !== null) {
+                executePendingDelete();
             }
         });
     </script>
