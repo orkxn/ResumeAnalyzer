@@ -10,7 +10,7 @@ public interface IResumeService
     /// CV yükleme akışının tamamını yönetir:
     /// Metin çıkarma → AI analiz → DB kayıt → Drive yükleme → DB güncelleme
     /// </summary>
-    Task<ResumeResponseDto> ProcessUploadAsync(IFormFile file, string userId, CancellationToken cancellationToken = default);
+    Task<ServiceResult<ResumeResponseDto>> ProcessUploadAsync(IFormFile file, string userId, CancellationToken cancellationToken = default);
 
     Task<List<Resume>> GetUserResumesAsync(string userId, CancellationToken cancellationToken = default);
     Task<Resume?> GetResumeByIdAsync(int id, CancellationToken cancellationToken = default);

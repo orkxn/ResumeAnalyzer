@@ -84,17 +84,17 @@ public class AiAnalysisService : IAiAnalysisService
         }
 
         var systemPrompt = @"Sen bir belgenin Özgeçmiş (CV / Resume) olup olmadığını tespit eden bir yardımcı yazılımsın.
-Sana gönderilen metni analiz et ve bu belgenin gerçek bir özgeçmiş/CV olup olmadığını belirle.
-Bir belgenin özgeçmiş sayılabilmesi için eğitim geçmişi, iş deneyimi, yetenekler, kişisel bilgiler, iletişim detayları veya kariyer hedefi gibi özgeçmişe özgü alanlardan en az birkaçını içermesi gerekir.
-SADECE JSON formatında şu yanıtı dönmelisin:
-{
-  ""isResume"": true
-}
-veya 
-{
-  ""isResume"": false
-}
-Yanıtında JSON dışında hiçbir metin, açıklama veya markdown bloğu yer almamalıdır.";
+    Sana gönderilen metni analiz et ve bu belgenin gerçek bir özgeçmiş/CV olup olmadığını belirle.
+    Bir belgenin özgeçmiş sayılabilmesi için eğitim geçmişi, iş deneyimi, yetenekler, kişisel bilgiler, iletişim detayları veya kariyer hedefi gibi özgeçmişe özgü alanlardan en az birkaçını içermesi gerekir.
+    SADECE JSON formatında şu yanıtı dönmelisin:
+    {
+    ""isResume"": true
+    }
+    veya 
+    {
+    ""isResume"": false
+    }
+    Yanıtında JSON dışında hiçbir metin, açıklama veya markdown bloğu yer almamalıdır.";
 
         var requestBody = new OllamaChatRequestDto
         {

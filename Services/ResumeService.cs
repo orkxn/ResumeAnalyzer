@@ -30,91 +30,97 @@ public class ResumeService : IResumeService
         _cache = cache;
     }
 
-    public async Task<ResumeResponseDto> ProcessUploadAsync(IFormFile file, string userId, CancellationToken cancellationToken = default)
+    public async Task<ServiceResult<ResumeResponseDto>> ProcessUploadAsync(IFormFile file, string userId, CancellationToken cancellationToken = default)
     {
-        // 1. PDF/DOCX Metnini Çıkar
-        using var textStream = file.OpenReadStream();
-        string extractedText = await _textExtractor.ExtractTextAsync(textStream, file.ContentType);
-
-        // 1b. Belgenin gerçekten bir özgeçmiş (CV) olup olmadığını yapay zeka ile denetle
-        bool isResume = await _aiService.IsResumeAsync(extractedText, cancellationToken);
-        if (!isResume)
-        {
-            throw new ArgumentException("Yüklediğiniz dosya geçerli bir özgeçmiş (CV) içeriği barındırmıyor. Lütfen iş deneyimlerinizi veya eğitim bilgilerinizi içeren gerçek bir özgeçmiş yükleyin.");
-        }
-
-        // 2. Ollama AI Analizi
-        var aiResult = await _aiService.AnalyzeResumeAsync(extractedText, cancellationToken);
-
-        // 3. DB Transaction başlat
-        //    Sıralama: önce DB kaydet (Drive bilgisi olmadan), sonra Drive'a yükle, sonra DB güncelle.
-        //    Bu sayede Drive hatası olursa DB rollback olur ve orphan dosya kalmaz.
-        using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-
         try
         {
-            // 4. Resume + Analysis entity'lerini oluştur ve tek seferde kaydet
-            var resumeEntity = new Resume
+            // 1. PDF/DOCX Metnini Çıkar
+            using var textStream = file.OpenReadStream();
+            string extractedText = await _textExtractor.ExtractTextAsync(textStream, file.ContentType);
+
+            // 1b. Belgenin gerçekten bir özgeçmiş (CV) olup olmadığını yapay zeka ile denetle
+            bool isResume = await _aiService.IsResumeAsync(extractedText, cancellationToken);
+            if (!isResume)
             {
-                FileName = file.FileName,
-                RawText = extractedText, // Çıkarılan metin artık kaydediliyor
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow,
-                // Navigation property ile Analysis'i bağla — ayrı SaveChanges gerekmez
-                Analysis = new Analysis
-                {
-                    Score = aiResult.Score,
-                    Strengths = aiResult.Strengths,
-                    Weaknesses = aiResult.Weaknesses,
-                    Suggestions = aiResult.Suggestions,
-                    ModelUsed = aiResult.ModelUsed ?? "unknown",
-                    CreatedAt = DateTime.UtcNow
-                }
-            };
+                return ServiceResult<ResumeResponseDto>.Failure("Yüklediğiniz dosya geçerli bir özgeçmiş (CV) içeriği barındırmıyor. Lütfen iş deneyimlerinizi veya eğitim bilgilerinizi içeren gerçek bir özgeçmiş yükleyin.");
+            }
 
-            _context.Resumes.Add(resumeEntity);
-            await _context.SaveChangesAsync(cancellationToken);
+            // 2. Ollama AI Analizi
+            var aiResult = await _aiService.AnalyzeResumeAsync(extractedText, cancellationToken);
 
-            // 5. Google Drive'a yükle
-            using var driveStream = file.OpenReadStream();
-            var driveResult = await _driveService.UploadFileAsync(
-                driveStream, file.FileName, file.ContentType, userId, cancellationToken);
+            // 3. DB Transaction başlat
+            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-            // 6. Drive bilgilerini DB'ye güncelle
-            resumeEntity.GoogleDriveFileId = driveResult.FileId;
-            resumeEntity.GoogleDriveFileUrl = driveResult.WebViewLink;
-            resumeEntity.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync(cancellationToken);
-
-            // 7. Transaction'ı onayla
-            await transaction.CommitAsync(cancellationToken);
-
-            // Önbelleği temizle
-            _cache.Remove($"resumes_list_{userId}");
-
-            // 8. Response DTO oluştur
-            return new ResumeResponseDto
+            try
             {
-                Id = resumeEntity.Id,
-                FileName = resumeEntity.FileName,
-                GoogleDriveFileUrl = resumeEntity.GoogleDriveFileUrl,
-                CreatedAt = resumeEntity.CreatedAt,
-                Analysis = new AnalysisResponseDto
+                // 4. Resume + Analysis entity'lerini oluştur ve tek seferde kaydet
+                var resumeEntity = new Resume
                 {
-                    Id = resumeEntity.Analysis.Id,
-                    Score = resumeEntity.Analysis.Score,
-                    Strengths = resumeEntity.Analysis.Strengths,
-                    Weaknesses = resumeEntity.Analysis.Weaknesses,
-                    Suggestions = resumeEntity.Analysis.Suggestions,
-                    ModelUsed = resumeEntity.Analysis.ModelUsed,
-                    CreatedAt = resumeEntity.Analysis.CreatedAt
-                }
-            };
+                    FileName = file.FileName,
+                    RawText = extractedText,
+                    UserId = userId,
+                    CreatedAt = DateTime.UtcNow,
+                    Analysis = new Analysis
+                    {
+                        Score = aiResult.Score,
+                        Strengths = aiResult.Strengths,
+                        Weaknesses = aiResult.Weaknesses,
+                        Suggestions = aiResult.Suggestions,
+                        ModelUsed = aiResult.ModelUsed ?? "unknown",
+                        CreatedAt = DateTime.UtcNow
+                    }
+                };
+
+                _context.Resumes.Add(resumeEntity);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                // 5. Google Drive'a yükle
+                using var driveStream = file.OpenReadStream();
+                var driveResult = await _driveService.UploadFileAsync(
+                    driveStream, file.FileName, file.ContentType, userId, cancellationToken);
+
+                // 6. Drive bilgilerini DB'ye güncelle
+                resumeEntity.GoogleDriveFileId = driveResult.FileId;
+                resumeEntity.GoogleDriveFileUrl = driveResult.WebViewLink;
+                resumeEntity.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync(cancellationToken);
+
+                // 7. Transaction'ı onayla
+                await transaction.CommitAsync(cancellationToken);
+
+                // Önbelleği temizle
+                _cache.Remove($"resumes_list_{userId}");
+
+                // 8. Response DTO oluştur
+                var responseDto = new ResumeResponseDto
+                {
+                    Id = resumeEntity.Id,
+                    FileName = resumeEntity.FileName,
+                    GoogleDriveFileUrl = resumeEntity.GoogleDriveFileUrl,
+                    CreatedAt = resumeEntity.CreatedAt,
+                    Analysis = new AnalysisResponseDto
+                    {
+                        Id = resumeEntity.Analysis.Id,
+                        Score = resumeEntity.Analysis.Score,
+                        Strengths = resumeEntity.Analysis.Strengths,
+                        Weaknesses = resumeEntity.Analysis.Weaknesses,
+                        Suggestions = resumeEntity.Analysis.Suggestions,
+                        ModelUsed = resumeEntity.Analysis.ModelUsed,
+                        CreatedAt = resumeEntity.Analysis.CreatedAt
+                    }
+                };
+
+                return ServiceResult<ResumeResponseDto>.Success(responseDto);
+            }
+            catch (System.Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
         }
-        catch
+        catch (System.Exception ex)
         {
-            await transaction.RollbackAsync(cancellationToken);
-            throw; // Controller'ın yakalaması için yeniden fırlat
+            return ServiceResult<ResumeResponseDto>.Failure(ex.Message);
         }
     }
 

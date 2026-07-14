@@ -36,31 +36,30 @@ namespace ResumeAnalyzer.Controllers
                 return View(dto);
             }
 
-            try
+            var serviceResult = await _authService.LoginAsync(dto);
+            if (!serviceResult.IsSuccess)
             {
-                var result = await _authService.LoginAsync(dto);
-
-                if (result.Succeeded)
-                {
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
-                    }
-                    return RedirectToAction("Index", "Home");
-                }
-
-                if (result.IsLockedOut)
-                {
-                    ModelState.AddModelError("", "Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Geçersiz e-posta veya şifre.");
-                }
+                ModelState.AddModelError("", serviceResult.ErrorMessage!);
+                return View(dto);
             }
-            catch (Exception)
+
+            var result = serviceResult.Data!;
+            if (result.Succeeded)
             {
-                ModelState.AddModelError("", "Giriş işlemi gerçekleştirilirken beklenmeyen bir sistem hatası oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.");
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (result.IsLockedOut)
+            {
+                ModelState.AddModelError("", "Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Geçersiz e-posta veya şifre.");
             }
 
             return View(dto);
@@ -89,24 +88,28 @@ namespace ResumeAnalyzer.Controllers
                 return View(dto);
             }
 
-            try
+            var serviceResult = await _authService.RegisterAsync(dto);
+            if (!serviceResult.IsSuccess)
             {
-                var result = await _authService.RegisterAsync(dto);
-
-                if (result.Succeeded)
+                if (serviceResult.Errors != null && serviceResult.Errors.Count > 0)
                 {
-                    TempData["RegistrationSuccess"] = "Kayıt başarılı! Giriş yapmak için lütfen bilgilerinizi girin.";
-                    return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
+                    foreach (var error in serviceResult.Errors)
+                    {
+                        ModelState.AddModelError("", error);
+                    }
                 }
-
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError("", error.Description);
+                    ModelState.AddModelError("", serviceResult.ErrorMessage!);
                 }
+                return View(dto);
             }
-            catch (Exception)
+
+            var result = serviceResult.Data!;
+            if (result.Succeeded)
             {
-                ModelState.AddModelError("", "Kayıt işlemi gerçekleştirilirken beklenmeyen bir sistem hatası oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyin.");
+                TempData["RegistrationSuccess"] = "Kayıt başarılı! Giriş yapmak için lütfen bilgilerinizi girin.";
+                return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
             }
 
             return View(dto);
@@ -135,25 +138,14 @@ namespace ResumeAnalyzer.Controllers
                 return View();
             }
 
-            try
+            var serviceResult = await _authService.ForgotPasswordAsync(email);
+            if (!serviceResult.IsSuccess)
             {
-                var result = await _authService.ForgotPasswordAsync(email);
-                if (result)
-                {
-                    ViewBag.SuccessMessage = "Şifre sıfırlama yönergeleri e-posta adresinize gönderildi.";
-                }
-                else
-                {
-                    // Güvenlik nedeniyle, e-posta bulunmasa bile başarılı gibi gösterebiliriz veya kullanıcıya bulunamadı diyebiliriz.
-                    // Burada bulunamadığını belirtelim:
-                    ModelState.AddModelError("", "Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.");
-                }
-            }
-            catch (Exception)
-            {
-                ModelState.AddModelError("", "İşlem sırasında beklenmeyen bir hata oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.");
+                ModelState.AddModelError("", serviceResult.ErrorMessage!);
+                return View();
             }
 
+            ViewBag.SuccessMessage = "Şifre sıfırlama yönergeleri e-posta adresinize gönderildi.";
             return View();
         }
     }

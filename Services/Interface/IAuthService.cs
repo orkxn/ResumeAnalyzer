@@ -5,9 +5,9 @@ namespace ResumeAnalyzer.Services.Interface
 {
     public interface IAuthService
     {
-        Task<SignInResult> LoginAsync(LoginRequestDto dto);
-        Task<IdentityResult> RegisterAsync(RegisterRequestDto dto);
+        Task<ServiceResult<SignInResult>> LoginAsync(LoginRequestDto dto);
+        Task<ServiceResult<IdentityResult>> RegisterAsync(RegisterRequestDto dto);
         Task LogoutAsync();
-        Task<bool> ForgotPasswordAsync(string email);
+        Task<ServiceResult<bool>> ForgotPasswordAsync(string email);
     }
 }

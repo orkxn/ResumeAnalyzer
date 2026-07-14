@@ -52,23 +52,16 @@ namespace ResumeAnalyzer.Controllers
                 return View();
             }
 
-            try
-            {
-                var resultDto = await _resumeService.ProcessUploadAsync(
-                    resumeFile, CurrentUserId, HttpContext.RequestAborted);
+            var serviceResult = await _resumeService.ProcessUploadAsync(
+                resumeFile, CurrentUserId, HttpContext.RequestAborted);
 
-                return RedirectToAction(nameof(Details), new { id = resultDto.Id });
-            }
-            catch (ArgumentException ex)
+            if (!serviceResult.IsSuccess)
             {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", serviceResult.ErrorMessage!);
                 return View();
             }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"İşlem sırasında bir hata oluştu: {ex.Message}");
-                return View();
-            }
+
+            return RedirectToAction(nameof(Details), new { id = serviceResult.Data!.Id });
         }
 
         // CV Detaylarını (Analiz sonuçlarını) gösterecek sayfa
