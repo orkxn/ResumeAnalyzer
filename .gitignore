@@ -30,3 +30,4 @@ Thumbs.db
 # ---- Kullanıcı sırları / yerel ayar ----
 *.log
 appsettings.*.local.json
+.env
