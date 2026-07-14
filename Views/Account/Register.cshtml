@@ -10,7 +10,12 @@
     </div>
 
     <form asp-controller="Account" asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="space-y-5">
-        <div asp-validation-summary="ModelOnly" class="text-red-500 dark:text-red-400 text-sm text-center"></div>
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
+        {
+            <div class="p-3.5 bg-red-50 dark:bg-red-950/20 border border-red-200/50 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-2xl text-xs text-center font-medium">
+                <div asp-validation-summary="ModelOnly" class="list-none"></div>
+            </div>
+        }
 
         <div>
             <label asp-for="Email" class="block text-sm font-medium text-slate-700 dark:text-neutral-300 mb-1.5 ml-1 transition-colors">E-posta</label>
