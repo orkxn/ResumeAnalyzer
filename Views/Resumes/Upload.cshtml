@@ -9,7 +9,7 @@
     </div>
 
     <div class="bg-white dark:bg-[#121212] p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-black/30 border border-gray-100 dark:border-neutral-800 transition-colors">
-        <form asp-controller="Resumes" asp-action="Upload" method="post" enctype="multipart/form-data" class="space-y-6">
+        <form id="uploadForm" asp-controller="Resumes" asp-action="Upload" method="post" enctype="multipart/form-data" class="space-y-6">
             <!-- Hata Bilgilendirme Kutusu (Hem server hem de client tarafı için) -->
             @{
                 var hasErrors = !ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0;
@@ -54,8 +54,39 @@
     </div>
 </div>
 
+<!-- Yükleme / Analiz Bekleme Ekranı (Overlay) -->
+<div id="loadingOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-xl hidden transition-all duration-300">
+    <div class="max-w-md w-full px-6 text-center space-y-8">
+        
+        <!-- Loading İkonu / Dalgalı Spinner -->
+        <div class="relative mx-auto w-24 h-24 flex items-center justify-center">
+            <!-- Dış dalga -->
+            <div class="absolute inset-0 rounded-full border-4 border-slate-900/10 dark:border-white/10 animate-ping"></div>
+            <!-- Orta Spinner -->
+            <svg class="animate-spin h-12 w-12 text-slate-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+
+        <div class="space-y-3">
+            <h2 id="loadingStatusText" class="text-2xl font-semibold text-slate-900 dark:text-white transition-colors duration-300">Dosyanız yükleniyor...</h2>
+            <p class="text-sm text-slate-500 dark:text-neutral-400">Lütfen tarayıcınızı kapatmayın veya sayfayı yenilemeyin.</p>
+        </div>
+
+        <!-- İlerleme Çubuğu (Progress Bar) -->
+        <div class="w-full h-2.5 bg-slate-100 dark:bg-neutral-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-neutral-700/50">
+            <div id="loadingProgressBar" class="h-full bg-slate-900 dark:bg-neutral-200 rounded-full transition-all duration-300 ease-out" style="width: 0%;"></div>
+        </div>
+
+        <div id="loadingPercentage" class="text-sm font-semibold text-slate-500 dark:text-neutral-400">0%</div>
+
+    </div>
+</div>
+
 @section Scripts {
     <script>
+        // Dosya Seçim Listener'ı
         document.getElementById('fileInput').addEventListener('change', function (e) {
             var file = e.target.files[0];
             if (file) {
@@ -97,6 +128,70 @@
                 iconWrapper.classList.remove('text-gray-300', 'dark:text-neutral-600', 'group-hover:text-slate-800', 'dark:group-hover:text-neutral-300');
                 iconWrapper.classList.add('text-green-500', 'dark:text-green-400');
             }
+        });
+
+        // Form Gönderim (Submit) ve İlerleme Çubuğu Akışı
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            var fileInput = document.getElementById('fileInput');
+            
+            // Dosya seçili mi kontrolü
+            if (!fileInput.files || fileInput.files.length === 0) {
+                return;
+            }
+
+            var file = fileInput.files[0];
+            var fileName = file.name;
+            var fileExtension = fileName.substring(fileName.lastIndexOf('.')).toUpperCase();
+            var allowedExtensions = ['.PDF', '.DOC', '.DOCX'];
+
+            // Uzantı geçersizse submit'i durdur
+            if (!allowedExtensions.includes(fileExtension)) {
+                e.preventDefault();
+                return;
+            }
+
+            // Yükleme ekranını göster
+            var overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+
+            var statusText = document.getElementById('loadingStatusText');
+            var progressBar = document.getElementById('loadingProgressBar');
+            var percentageText = document.getElementById('loadingPercentage');
+
+            var progress = 0;
+            var messages = [
+                { limit: 20, text: "Dosyanız yükleniyor..." },
+                { limit: 45, text: "Google Drive'a kaydediliyor..." },
+                { limit: 65, text: "Metin içeriği çıkartılıyor..." },
+                { limit: 85, text: "Yapay zeka analiz ediyor, lütfen bekleyin..." },
+                { limit: 95, text: "Yapay zeka analiz sonuçlarını düzenliyor..." },
+                { limit: 99, text: "Dosya kaydı tamamlanıyor..." }
+            ];
+
+            // Animasyon çubuğunu doldur
+            var interval = setInterval(function () {
+                if (progress < 98) {
+                    // Yükleme ve AI analizi süresine göre artış hızı
+                    progress += Math.random() * 2.5 + 0.3;
+                    if (progress > 98) {
+                        progress = 98;
+                    }
+
+                    var percent = Math.floor(progress);
+                    progressBar.style.width = percent + "%";
+                    percentageText.innerText = percent + "%";
+
+                    // Mevcut yüzdeye göre durum mesajını güncelle
+                    for (var i = 0; i < messages.length; i++) {
+                        if (percent <= messages[i].limit) {
+                            statusText.innerText = messages[i].text;
+                            break;
+                        }
+                    }
+                } else {
+                    clearInterval(interval);
+                }
+            }, 250); // Hızlı ve akıcı ilerleme
         });
     </script>
 }
