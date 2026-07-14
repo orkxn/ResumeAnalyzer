@@ -76,6 +76,22 @@ public class GoogleDriveService : IGoogleDriveService
             throw new InvalidOperationException("Google Drive yüklemesi başarısız oldu, yanıt boş döndü.");
         }
 
+        // Dosya izinlerini "Bağlantıya sahip herkes görüntüleyebilir" olarak ayarla
+        try
+        {
+            var permission = new Google.Apis.Drive.v3.Data.Permission
+            {
+                Type = "anyone",
+                Role = "reader"
+            };
+            await service.Permissions.Create(permission, uploadedFile.Id).ExecuteAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // İzin ayarlanamazsa bile yükleme tamamlandığı için işlemi kesmeyip logluyoruz
+            Console.WriteLine($"Google Drive dosya izinleri güncellenirken hata oluştu: {ex.Message}");
+        }
+
         return new GoogleDriveUploadResultDto
         {
             FileId = uploadedFile.Id,
