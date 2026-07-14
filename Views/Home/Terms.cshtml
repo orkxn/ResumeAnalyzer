@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Kullanım Şartları";
+}
+
+<div class="max-w-3xl mx-auto pb-12">
+    <div class="mb-8">
+        <h1 class="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight transition-colors">Kullanım Şartları</h1>
+        <p class="text-slate-500 dark:text-neutral-400 mt-2 transition-colors">Platformumuzu kullanırken tabi olduğunuz kurallar ve koşullar.</p>
+    </div>
+
+    <div class="bg-white dark:bg-[#121212] border border-slate-200/60 dark:border-neutral-800 rounded-3xl p-8 sm:p-10 shadow-sm transition-colors space-y-8">
+        
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">1. Kabul Edilme ve Kapsam</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Bu platformu kullanarak, aşağıda belirtilen kullanım şartlarını, gizlilik politikamızı ve sisteme dair temel çalışma kurallarını tamamen kabul etmiş sayılırsınız. Şartları kabul etmiyorsanız lütfen sistemi kullanmayı durdurun.
+            </p>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">2. Hesap Oluşturma ve Güvenlik</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Platforma kayıt olurken güncel ve doğru bir e-posta adresi sağlamanız gerekmektedir. Hesabınızın şifre güvenliğinden tamamen siz sorumlusunuz. Şüpheli bir durum veya yetkisiz erişim fark ettiğinizde şifrenizi değiştirmeli ve bizimle iletişime geçmelisiniz.
+            </p>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">3. İçerik ve Dosya Yükleme Kuralları</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Kullanıcılar sisteme yalnızca kendilerine ait olan veya yüklemeye yetkili oldukları özgeçmiş (CV) dosyalarını yükleyebilirler. Yüklenen dosyaların kötü amaçlı yazılım (virüs, truva atı vb.) içermemesi gerekmektedir. Yasa dışı veya etik dışı içeriklerin analizi engellenebilir.
+            </p>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">4. Yapay Zeka Sonuçları ve Sorumluluk Sınırı</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Platformda üretilen skorlamalar, güçlü/zayıf yönler ve öneriler tamamen **yapay zeka analiz modellerinin** değerlendirmeleridir. Bu değerlendirmeler resmi bir danışmanlık veya kesinlik içermez. Yapay zeka tavsiyelerinin uygulanmasından doğacak kariyer sonuçlarından veya iş bulma durumlarından platform sorumluluk kabul etmez.
+            </p>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">5. Hizmetin Kesintiye Uğraması veya Değişikliği</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Sistemin kesintisiz çalışması için gerekli teknik çaba gösterilir. Ancak sunucu güncellemeleri, elektrik kesintileri veya altyapı sağlayıcılarından kaynaklanan beklenmedik durumlardan dolayı servislerde yaşanabilecek geçici kesintilerden veya veri gecikmelerinden dolayı sorumluluk üstlenilmez.
+            </p>
+        </section>
+
+        <div class="border-t border-slate-100 dark:border-neutral-800 pt-6 text-xs text-slate-400 dark:text-neutral-500">
+            Son güncelleme tarihi: @DateTime.Now.ToString("dd MMMM yyyy")
+        </div>
+
+    </div>
+</div>

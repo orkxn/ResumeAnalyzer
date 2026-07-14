@@ -20,6 +20,18 @@ public class HomeController : Controller
         return View();
     }
 
+    [HttpGet("Privacy")]
+    public IActionResult Privacy()
+    {
+        return View();
+    }
+
+    [HttpGet("Terms")]
+    public IActionResult Terms()
+    {
+        return View();
+    }
+
     [HttpPost]
     public async Task<IActionResult> TestUpload(ResumeUploadRequestDto requestDto)
     {
