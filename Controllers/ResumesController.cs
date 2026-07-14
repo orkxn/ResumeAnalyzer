@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ResumeAnalyzer.Data;
 using ResumeAnalyzer.Services.Interface;
+using ResumeAnalyzer.ViewModels;
 
 namespace ResumeAnalyzer.Controllers
 {
@@ -19,13 +20,21 @@ namespace ResumeAnalyzer.Controllers
         // Kullanıcının mevcut özgeçmişlerini listeleyeceği sayfa
         public async Task<IActionResult> Index()
         {
-            // Şimdilik test kullanıcısının CV'lerini getiriyoruz
+            string currentUserId = "test-user-orkun";
+            
             var resumes = await _context.Resumes
-                .Include(r => r.Analysis)
-                .Where(r => r.UserId == "test-user-orkun")
-                .OrderByDescending(r => r.CreatedAt)
+                .Include(r => r.Analysis) 
+                .Where(r => r.UserId == currentUserId)
+                .Select(r => new ResumeListViewModel
+                {
+                    Id = r.Id,
+                    FileName = r.FileName,
+                    CreatedAt = r.CreatedAt,
+                    Score = r.Analysis != null ? r.Analysis.Score : null 
+                })
+                .OrderByDescending(r => r.CreatedAt) 
                 .ToListAsync();
-
+            
             return View(resumes);
         }
 
