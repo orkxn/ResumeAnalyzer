@@ -227,42 +227,15 @@ public class FlexibleIntConverter : System.Text.Json.Serialization.JsonConverter
     public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Number)
-        {
-            if (reader.TryGetInt32(out int val))
-            {
-                return val;
-            }
-            return (int)reader.GetDouble();
-        }
+            return reader.TryGetInt32(out int val) ? val : (int)reader.GetDouble();
 
-        if (reader.TokenType == JsonTokenType.String)
-        {
-            var stringValue = reader.GetString();
-            if (string.IsNullOrWhiteSpace(stringValue))
-            {
-                return 0;
-            }
-
-            var sb = new System.Text.StringBuilder();
-            foreach (var c in stringValue)
-            {
-                if (char.IsDigit(c) || c == '-')
-                {
-                    sb.Append(c);
-                }
-            }
-            var cleaned = sb.ToString();
-            if (int.TryParse(cleaned, out int result))
-            {
-                return result;
-            }
-        }
+        if (reader.TokenType == JsonTokenType.String && 
+            int.TryParse(System.Text.RegularExpressions.Regex.Replace(reader.GetString() ?? "", @"[^\d-]", ""), out int result))
+            return result;
 
         return 0;
     }
 
-    public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
-    {
+    public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options) => 
         writer.WriteNumberValue(value);
-    }
 }

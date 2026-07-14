@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using ResumeAnalyzer.Data;
 using ResumeAnalyzer.DTOs;
 using ResumeAnalyzer.Models;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 
 namespace ResumeAnalyzer.Services;
@@ -13,20 +12,17 @@ public class ResumeService
     private readonly GoogleDriveService _driveService;
     private readonly AiAnalysisService _aiService;
     private readonly ApplicationDbContext _context;
-    private readonly IMemoryCache _cache;
 
     public ResumeService(
         TextExtractorService textExtractor,
         GoogleDriveService driveService,
         AiAnalysisService aiService,
-        ApplicationDbContext context,
-        IMemoryCache cache)
+        ApplicationDbContext context)
     {
         _textExtractor = textExtractor;
         _driveService = driveService;
         _aiService = aiService;
         _context = context;
-        _cache = cache;
     }
 
     public async Task<ServiceResult<ResumeResponseDto>> ProcessUploadAsync(IFormFile file, string userId, CancellationToken cancellationToken = default)
@@ -87,9 +83,6 @@ public class ResumeService
                 // 7. Transaction'ı onayla
                 await transaction.CommitAsync(cancellationToken);
 
-                // Önbelleği temizle
-                _cache.Remove($"resumes_list_{userId}");
-
                 // 8. Response DTO oluştur
                 var responseDto = new ResumeResponseDto
                 {
@@ -125,45 +118,18 @@ public class ResumeService
 
     public async Task<List<Resume>> GetUserResumesAsync(string userId, CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"resumes_list_{userId}";
-        if (!_cache.TryGetValue(cacheKey, out List<Resume>? resumes))
-        {
-            resumes = await _context.Resumes
-                .Include(r => r.Analysis)
-                .Where(r => r.UserId == userId)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToListAsync(cancellationToken);
-
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromMinutes(5))
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
-
-            _cache.Set(cacheKey, resumes, cacheEntryOptions);
-        }
-
-        return resumes ?? new List<Resume>();
+        return await _context.Resumes
+            .Include(r => r.Analysis)
+            .Where(r => r.UserId == userId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Resume?> GetResumeByIdAsync(int id, string userId, CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"resume_detail_{id}_{userId}";
-        if (!_cache.TryGetValue(cacheKey, out Resume? resume))
-        {
-            resume = await _context.Resumes
-                .Include(r => r.Analysis)
-                .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId, cancellationToken);
-
-            if (resume != null)
-            {
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(20));
-
-                _cache.Set(cacheKey, resume, cacheEntryOptions);
-            }
-        }
-
-        return resume;
+        return await _context.Resumes
+            .Include(r => r.Analysis)
+            .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId, cancellationToken);
     }
 
     public async Task DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default)
@@ -176,9 +142,5 @@ public class ResumeService
 
         _context.Resumes.Remove(resume);
         await _context.SaveChangesAsync(cancellationToken);
-
-        // Önbelleği temizle
-        _cache.Remove($"resumes_list_{userId}");
-        _cache.Remove($"resume_detail_{id}");
     }
 }
