@@ -89,7 +89,11 @@ public class AiAnalysisService
             throw new InvalidOperationException("Ollama'dan boş yanıt döndü.");
 
         // AI'ın ürettiği iç JSON'ı bizim AnalysisResponseDto modeline eşliyoruz
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var options = new JsonSerializerOptions 
+        { 
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+        };
         var analysisResult = JsonSerializer.Deserialize<AnalysisResponseDto>(aiMessageContent, options);
 
         if (analysisResult == null)
