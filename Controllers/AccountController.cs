@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ResumeAnalyzer.DTOs;
-using ResumeAnalyzer.Services.Interface;
+using ResumeAnalyzer.Services;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace ResumeAnalyzer.Controllers
@@ -8,11 +8,11 @@ namespace ResumeAnalyzer.Controllers
     [EnableRateLimiting("GeneralPolicy")]
     public class AccountController : Controller
     {
-        private readonly IAuthService _authService;
+        private readonly AuthService _authService;
 
-        public AccountController(IAuthService authService)
+        public AccountController(AuthService _authService)
         {
-            _authService = authService;
+            this._authService = _authService;
         }
 
         [HttpGet]

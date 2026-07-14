@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using ResumeAnalyzer.DTOs;
 using ResumeAnalyzer.Models;
-using ResumeAnalyzer.Services.Interface;
 
 namespace ResumeAnalyzer.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;

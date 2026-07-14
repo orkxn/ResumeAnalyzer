@@ -4,22 +4,21 @@ using ResumeAnalyzer.DTOs;
 using ResumeAnalyzer.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
-using ResumeAnalyzer.Services.Interface;
 
 namespace ResumeAnalyzer.Services;
 
-public class ResumeService : IResumeService
+public class ResumeService
 {
-    private readonly ITextExtractorService _textExtractor;
-    private readonly IGoogleDriveService _driveService;
-    private readonly IAiAnalysisService _aiService;
+    private readonly TextExtractorService _textExtractor;
+    private readonly GoogleDriveService _driveService;
+    private readonly AiAnalysisService _aiService;
     private readonly ApplicationDbContext _context;
     private readonly IMemoryCache _cache;
 
     public ResumeService(
-        ITextExtractorService textExtractor,
-        IGoogleDriveService driveService,
-        IAiAnalysisService aiService,
+        TextExtractorService textExtractor,
+        GoogleDriveService driveService,
+        AiAnalysisService aiService,
         ApplicationDbContext context,
         IMemoryCache cache)
     {

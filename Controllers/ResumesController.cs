@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using ResumeAnalyzer.Services.Interface;
+using ResumeAnalyzer.Services;
 using ResumeAnalyzer.Models;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -11,9 +11,9 @@ namespace ResumeAnalyzer.Controllers
     [EnableRateLimiting("GeneralPolicy")]
     public class ResumesController : Controller
     {
-        private readonly IResumeService _resumeService;
+        private readonly ResumeService _resumeService;
 
-        public ResumesController(IResumeService resumeService)
+        public ResumesController(ResumeService resumeService)
         {
             _resumeService = resumeService;
         }

@@ -1,5 +1,4 @@
 using ResumeAnalyzer.Services;
-using ResumeAnalyzer.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ResumeAnalyzer.Models;
@@ -21,11 +20,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();
 
 // dependency-injection için
-builder.Services.AddScoped<ITextExtractorService, TextExtractorService>();
-builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
-builder.Services.AddHttpClient<IAiAnalysisService, AiAnalysisService>();
-builder.Services.AddScoped<IResumeService, ResumeService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<TextExtractorService>();
+builder.Services.AddScoped<GoogleDriveService>();
+builder.Services.AddHttpClient<AiAnalysisService>();
+builder.Services.AddScoped<ResumeService>();
+builder.Services.AddScoped<AuthService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

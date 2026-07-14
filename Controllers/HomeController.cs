@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ResumeAnalyzer.DTOs;
-using ResumeAnalyzer.Services.Interface;
+using ResumeAnalyzer.Services;
 using ResumeAnalyzer.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
@@ -10,10 +10,10 @@ namespace ResumeAnalyzer.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IResumeService _resumeService;
+    private readonly ResumeService _resumeService;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(IResumeService resumeService, ILogger<HomeController> logger)
+    public HomeController(ResumeService resumeService, ILogger<HomeController> logger)
     {
         _resumeService = resumeService;
         _logger = logger;
@@ -37,12 +37,12 @@ public class HomeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> TestUpload(ResumeUploadRequestDto requestDto)
+    public async Task<IActionResult> TestUpload(IFormFile file)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        if (file == null || file.Length == 0) return BadRequest("Lütfen geçerli bir dosya seçin.");
 
         var result = await _resumeService.ProcessUploadAsync(
-            requestDto.File, "test-user-orkun", HttpContext.RequestAborted);
+            file, "test-user-orkun", HttpContext.RequestAborted);
 
         if (!result.IsSuccess)
         {
