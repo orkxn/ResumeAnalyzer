@@ -1,6 +1,8 @@
 using System.Text;
 using System.Text.Json;
 using ResumeAnalyzer.DTOs;
+using System.Net.Http.Json;
+using System.Linq;
 
 namespace ResumeAnalyzer.Services;
 
@@ -129,8 +131,7 @@ public class AiAnalysisService
             }
         };
 
-        var jsonRequest = JsonSerializer.Serialize(requestBody);
-        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+        var content = JsonContent.Create(requestBody);
 
         var response = await _httpClient.PostAsync(_ollamaUrl, content, cancellationToken);
         if (!response.IsSuccessStatusCode)
@@ -197,8 +198,7 @@ public class AiAnalysisService
             }
         };
 
-        var jsonRequest = JsonSerializer.Serialize(requestBody);
-        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+        var content = JsonContent.Create(requestBody);
 
         var response = await _httpClient.PostAsync(_ollamaUrl, content, cancellationToken);
         if (!response.IsSuccessStatusCode)
@@ -224,21 +224,9 @@ public class AiAnalysisService
         return false;
     }
 
-    private string DetectLanguage(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text)) return "tr";
-
-        // Türkçe'ye özgü harfler ve yaygın Türkçe kelimelerin varlığına bakarız
-        string[] turkishIndicators = { "ı", "ğ", "ü", "ş", "ö", "ç", "İ", "Ğ", "Ü", "Ş", "Ö", "Ç", " ve ", " bir ", " için ", " ile ", " olarak ", " mezun ", " tecrübe ", " deneyim " };
-        foreach (var indicator in turkishIndicators)
-        {
-            if (text.Contains(indicator, StringComparison.OrdinalIgnoreCase))
-            {
-                return "tr";
-            }
-        }
-        return "en";
-    }
+    private string DetectLanguage(string text) =>
+        !string.IsNullOrWhiteSpace(text) && new[] { "ı", "ğ", "ü", "ş", "ö", "ç", "İ", "Ğ", "Ü", "Ş", "Ö", "Ç", " ve ", " bir ", " için ", " ile ", " olarak ", " mezun ", " tecrübe ", " deneyim " }
+            .Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)) ? "tr" : "en";
 }
 
 public class FlexibleIntConverter : System.Text.Json.Serialization.JsonConverter<int>
