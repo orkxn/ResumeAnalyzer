@@ -15,8 +15,9 @@ public class AiAnalysisService
     public AiAnalysisService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
-        _ollamaUrl = $"{configuration["Ollama:BaseUrl"] ?? "http://localhost:11434"}/api/chat";
-        _modelName = configuration["Ollama:ModelName"] ?? "nemotron-3-super:cloud";
+        string baseUrl = configuration["OLLAMA_BASEURL"] ?? configuration["Ollama:BaseUrl"] ?? throw new InvalidOperationException("Ollama BaseUrl configuration (OLLAMA_BASEURL) is missing.");
+        _ollamaUrl = $"{baseUrl.TrimEnd('/')}/api/chat";
+        _modelName = configuration["OLLAMA_MODELNAME"] ?? configuration["Ollama:ModelName"] ?? throw new InvalidOperationException("Ollama ModelName configuration (OLLAMA_MODELNAME) is missing.");
     }
 
     public async Task<AnalysisResponseDto> AnalyzeResumeAsync(string resumeText, CancellationToken cancellationToken = default)
