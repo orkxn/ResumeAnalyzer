@@ -113,4 +113,14 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
+// Uygulama başlarken bekleyen veritabanı migrasyonlarını otomatik uygular (Zaten güncelse işlem yapmaz)
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    if (dbContext.Database.GetPendingMigrations().Any())
+    {
+        dbContext.Database.Migrate();
+    }
+}
+
 app.Run();
