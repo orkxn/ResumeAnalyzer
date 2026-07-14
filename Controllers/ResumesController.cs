@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using ResumeAnalyzer.Services.Interface;
 using ResumeAnalyzer.Models;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ResumeAnalyzer.Controllers
 {
     [Authorize]
+    [EnableRateLimiting("GeneralPolicy")]
     public class ResumesController : Controller
     {
         private readonly IResumeService _resumeService;
@@ -35,6 +37,7 @@ namespace ResumeAnalyzer.Controllers
         // Formdan gelen CV'yi karşılayan Action
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [EnableRateLimiting("UploadPolicy")]
         public async Task<IActionResult> Upload(IFormFile resumeFile)
         {
             if (resumeFile == null || resumeFile.Length == 0)
@@ -67,7 +70,7 @@ namespace ResumeAnalyzer.Controllers
         // CV Detaylarını (Analiz sonuçlarını) gösterecek sayfa
         public async Task<IActionResult> Details(int id)
         {
-            var resume = await _resumeService.GetResumeByIdAsync(id, HttpContext.RequestAborted);
+            var resume = await _resumeService.GetResumeByIdAsync(id, CurrentUserId, HttpContext.RequestAborted);
             if (resume == null)
             {
                 return NotFound();
