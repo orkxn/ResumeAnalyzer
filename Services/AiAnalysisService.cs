@@ -91,9 +91,9 @@ public class AiAnalysisService
         // AI'ın ürettiği iç JSON'ı bizim AnalysisResponseDto modeline eşliyoruz
         var options = new JsonSerializerOptions 
         { 
-            PropertyNameCaseInsensitive = true,
-            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+            PropertyNameCaseInsensitive = true
         };
+        options.Converters.Add(new FlexibleIntConverter());
         var analysisResult = JsonSerializer.Deserialize<AnalysisResponseDto>(aiMessageContent, options);
 
         if (analysisResult == null)
@@ -158,5 +158,50 @@ public class AiAnalysisService
         }
 
         return false;
+    }
+}
+
+public class FlexibleIntConverter : System.Text.Json.Serialization.JsonConverter<int>
+{
+    public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Number)
+        {
+            if (reader.TryGetInt32(out int val))
+            {
+                return val;
+            }
+            return (int)reader.GetDouble();
+        }
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            var stringValue = reader.GetString();
+            if (string.IsNullOrWhiteSpace(stringValue))
+            {
+                return 0;
+            }
+
+            var sb = new System.Text.StringBuilder();
+            foreach (var c in stringValue)
+            {
+                if (char.IsDigit(c) || c == '-')
+                {
+                    sb.Append(c);
+                }
+            }
+            var cleaned = sb.ToString();
+            if (int.TryParse(cleaned, out int result))
+            {
+                return result;
+            }
+        }
+
+        return 0;
+    }
+
+    public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
+    {
+        writer.WriteNumberValue(value);
     }
 }
