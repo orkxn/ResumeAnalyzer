@@ -16,7 +16,7 @@ public class AiAnalysisService
     {
         _httpClient = httpClient;
         _ollamaUrl = $"{configuration["Ollama:BaseUrl"] ?? "http://localhost:11434"}/api/chat";
-        _modelName = configuration["Ollama:ModelName"] ?? "llama3.2:latest";
+        _modelName = configuration["Ollama:ModelName"] ?? "nemotron-3-super:cloud";
     }
 
     public async Task<AnalysisResponseDto> AnalyzeResumeAsync(string resumeText, CancellationToken cancellationToken = default)
