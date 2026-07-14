@@ -43,18 +43,25 @@ namespace ResumeAnalyzer.Controllers
                 return View();
             }
 
-            try
+            // Backend Dosya Uzantısı Doğrulaması
+            var allowedExtensions = new[] { ".pdf", ".doc", ".docx" };
+            var fileExtension = Path.GetExtension(resumeFile.FileName)?.ToLower();
+            if (string.IsNullOrEmpty(fileExtension) || !allowedExtensions.Contains(fileExtension))
             {
-                var resultDto = await _resumeService.ProcessUploadAsync(
-                    resumeFile, CurrentUserId, HttpContext.RequestAborted);
-
-                return RedirectToAction(nameof(Details), new { id = resultDto.Id });
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"İşlem sırasında bir hata oluştu: {ex.Message}");
+                ModelState.AddModelError("", "Sadece PDF veya Word (.doc, .docx) dosyaları yükleyebilirsiniz.");
                 return View();
             }
+
+            var serviceResult = await _resumeService.ProcessUploadAsync(
+                resumeFile, CurrentUserId, HttpContext.RequestAborted);
+
+            if (!serviceResult.IsSuccess)
+            {
+                ModelState.AddModelError("", serviceResult.ErrorMessage!);
+                return View();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = serviceResult.Data!.Id });
         }
 
         // CV Detaylarını (Analiz sonuçlarını) gösterecek sayfa

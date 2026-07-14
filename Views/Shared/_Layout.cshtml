@@ -29,10 +29,13 @@
                 </div>
 
                 <nav class="hidden md:flex space-x-8">
-                    <!-- MENÜ LİNKLERİ: dark:text-neutral-400 ve dark:hover:text-white eklendi -->
-                    <a asp-controller="Resumes" asp-action="Index" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Özgeçmişler</a>
-                    <a asp-controller="Resumes" asp-action="Upload" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Yeni Yükle</a>
-                    <a asp-controller="Resumes" asp-action="Compare" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Karşılaştır</a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <!-- MENÜ LİNKLERİ: dark:text-neutral-400 ve dark:hover:text-white eklendi -->
+                        <a asp-controller="Resumes" asp-action="Index" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Özgeçmişler</a>
+                        <a asp-controller="Resumes" asp-action="Upload" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Yeni Yükle</a>
+                        <a asp-controller="Resumes" asp-action="Compare" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Karşılaştır</a>
+                    }
                 </nav>
 
                 <div class="flex items-center space-x-4">

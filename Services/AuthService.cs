@@ -16,21 +16,46 @@ namespace ResumeAnalyzer.Services
             _signInManager = signInManager;
         }
 
-        public async Task<SignInResult> LoginAsync(LoginRequestDto dto)
+        public async Task<ServiceResult<SignInResult>> LoginAsync(LoginRequestDto dto)
         {
-            return await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, dto.RememberMe, lockoutOnFailure: false);
+            try
+            {
+                var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, dto.RememberMe, lockoutOnFailure: false);
+                return ServiceResult<SignInResult>.Success(result);
+            }
+            catch (System.Exception)
+            {
+                return ServiceResult<SignInResult>.Failure("Giriş işlemi gerçekleştirilirken beklenmeyen bir sistem hatası oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.");
+            }
         }
 
-        public async Task<IdentityResult> RegisterAsync(RegisterRequestDto dto)
+        public async Task<ServiceResult<IdentityResult>> RegisterAsync(RegisterRequestDto dto)
         {
-            var user = new ApplicationUser
+            try
             {
-                UserName = dto.Email,
-                Email = dto.Email
-            };
+                var user = new ApplicationUser
+                {
+                    UserName = dto.Email,
+                    Email = dto.Email
+                };
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            return result;
+                var result = await _userManager.CreateAsync(user, dto.Password);
+                if (result.Succeeded)
+                {
+                    return ServiceResult<IdentityResult>.Success(result);
+                }
+
+                var errors = new System.Collections.Generic.List<string>();
+                foreach (var err in result.Errors)
+                {
+                    errors.Add(err.Description);
+                }
+                return ServiceResult<IdentityResult>.Failure("Kayıt işlemi başarısız oldu.", errors);
+            }
+            catch (System.Exception)
+            {
+                return ServiceResult<IdentityResult>.Failure("Kayıt işlemi gerçekleştirilirken beklenmeyen bir sistem hatası oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyin.");
+            }
         }
 
         public async Task LogoutAsync()
@@ -38,17 +63,24 @@ namespace ResumeAnalyzer.Services
             await _signInManager.SignOutAsync();
         }
 
-        public async Task<bool> ForgotPasswordAsync(string email)
+        public async Task<ServiceResult<bool>> ForgotPasswordAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            try
             {
-                return false;
-            }
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return ServiceResult<bool>.Failure("Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.");
+                }
 
-            // Şimdilik sadece kullanıcının var olduğunu doğrulayıp true dönüyoruz.
-            // İleride buraya E-posta gönderme mekanizması (IEmailSender) entegre edilebilir.
-            return true;
+                // Şimdilik sadece kullanıcının var olduğunu doğrulayıp true dönüyoruz.
+                // İleride buraya E-posta gönderme mekanizması (IEmailSender) entegre edilebilir.
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (System.Exception)
+            {
+                return ServiceResult<bool>.Failure("İşlem sırasında beklenmeyen bir hata oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.");
+            }
         }
     }
 }
