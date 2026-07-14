@@ -167,12 +167,12 @@ public class ResumeService : IResumeService
         return resume;
     }
 
-    public async Task<bool> DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default)
+    public async Task DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default)
     {
         var resume = await _context.Resumes.FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId, cancellationToken);
         if (resume == null)
         {
-            return false;
+            throw new KeyNotFoundException("Silmek istediğiniz özgeçmiş bulunamadı veya silme yetkiniz yok.");
         }
 
         _context.Resumes.Remove(resume);
@@ -181,7 +181,5 @@ public class ResumeService : IResumeService
         // Önbelleği temizle
         _cache.Remove($"resumes_list_{userId}");
         _cache.Remove($"resume_detail_{id}");
-
-        return true;
     }
 }

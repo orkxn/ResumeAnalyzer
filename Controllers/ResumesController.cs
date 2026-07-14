@@ -73,7 +73,7 @@ namespace ResumeAnalyzer.Controllers
             var resume = await _resumeService.GetResumeByIdAsync(id, CurrentUserId, HttpContext.RequestAborted);
             if (resume == null)
             {
-                return NotFound();
+                throw new KeyNotFoundException("İstediğiniz özgeçmiş bulunamadı veya görüntüleme yetkiniz yok.");
             }
 
             return View(resume);

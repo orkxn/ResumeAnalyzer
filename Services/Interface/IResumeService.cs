@@ -14,5 +14,5 @@ public interface IResumeService
 
     Task<List<Resume>> GetUserResumesAsync(string userId, CancellationToken cancellationToken = default);
     Task<Resume?> GetResumeByIdAsync(int id, string userId, CancellationToken cancellationToken = default);
-    Task<bool> DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default);
+    Task DeleteResumeAsync(int id, string userId, CancellationToken cancellationToken = default);
 }
