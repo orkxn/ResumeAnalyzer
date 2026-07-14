@@ -73,7 +73,10 @@ public class AiAnalysisService
             messages = new[]
             {
                 new { role = "system", content = systemPrompt },
-                new { role = "user", content = $"İşte analiz edilecek özgeçmiş metni:\n\n{resumeText}" }
+                new { role = "user", content = $"[DİL UYUMU / LANGUAGE MATCH REQUIRED]:\n" +
+                                               $"Bu özgeçmiş hangi dilde yazıldıysa (Türkçe, İngilizce vb.), JSON yanıtındaki tüm açıklamaları (summary, strengths, weaknesses, suggestions, notes) KESİNLİKLE o dilde yaz.\n" +
+                                               $"If this CV is in English, respond in English. If this CV is in Turkish, respond in Turkish. Do not translate the response to English if the CV is in Turkish.\n\n" +
+                                               $"Analiz edilecek Özgeçmiş Metni / Resume Text to Analyze:\n{resumeText}" }
             }
         };
 
