@@ -75,4 +75,59 @@ public class AiAnalysisService : IAiAnalysisService
 
         return analysisResult;
     }
+
+    public async Task<bool> IsResumeAsync(string text, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(text) || text.Length < 30)
+        {
+            return false;
+        }
+
+        var systemPrompt = @"Sen bir belgenin Özgeçmiş (CV / Resume) olup olmadığını tespit eden bir yardımcı yazılımsın.
+Sana gönderilen metni analiz et ve bu belgenin gerçek bir özgeçmiş/CV olup olmadığını belirle.
+Bir belgenin özgeçmiş sayılabilmesi için eğitim geçmişi, iş deneyimi, yetenekler, kişisel bilgiler, iletişim detayları veya kariyer hedefi gibi özgeçmişe özgü alanlardan en az birkaçını içermesi gerekir.
+SADECE JSON formatında şu yanıtı dönmelisin:
+{
+  ""isResume"": true
+}
+veya 
+{
+  ""isResume"": false
+}
+Yanıtında JSON dışında hiçbir metin, açıklama veya markdown bloğu yer almamalıdır.";
+
+        var requestBody = new OllamaChatRequestDto
+        {
+            Model = _modelName,
+            Format = "json",
+            Stream = false,
+            Messages = new List<OllamaMessageDto>
+            {
+                new() { Role = "system", Content = systemPrompt },
+                new() { Role = "user", Content = $"İşte analiz edilecek belge metni:\n\n{text}" }
+            }
+        };
+
+        var jsonRequest = JsonSerializer.Serialize(requestBody);
+        var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(_ollamaUrl, content, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        var jsonResponse = await response.Content.ReadAsStringAsync(cancellationToken);
+        
+        using var doc = JsonDocument.Parse(jsonResponse);
+        var aiMessageContent = doc.RootElement.GetProperty("message").GetProperty("content").GetString();
+
+        if (string.IsNullOrEmpty(aiMessageContent))
+            return false;
+
+        using var innerDoc = JsonDocument.Parse(aiMessageContent);
+        if (innerDoc.RootElement.TryGetProperty("isResume", out var isResumeProp))
+        {
+            return isResumeProp.GetBoolean();
+        }
+
+        return false;
+    }
 }

@@ -36,6 +36,13 @@ public class ResumeService : IResumeService
         using var textStream = file.OpenReadStream();
         string extractedText = await _textExtractor.ExtractTextAsync(textStream, file.ContentType);
 
+        // 1b. Belgenin gerçekten bir özgeçmiş (CV) olup olmadığını yapay zeka ile denetle
+        bool isResume = await _aiService.IsResumeAsync(extractedText, cancellationToken);
+        if (!isResume)
+        {
+            throw new ArgumentException("Yüklediğiniz dosya geçerli bir özgeçmiş (CV) içeriği barındırmıyor. Lütfen iş deneyimlerinizi veya eğitim bilgilerinizi içeren gerçek bir özgeçmiş yükleyin.");
+        }
+
         // 2. Ollama AI Analizi
         var aiResult = await _aiService.AnalyzeResumeAsync(extractedText, cancellationToken);
 

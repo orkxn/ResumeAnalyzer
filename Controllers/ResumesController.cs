@@ -59,6 +59,11 @@ namespace ResumeAnalyzer.Controllers
 
                 return RedirectToAction(nameof(Details), new { id = resultDto.Id });
             }
+            catch (ArgumentException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View();
+            }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", $"İşlem sırasında bir hata oluştu: {ex.Message}");
