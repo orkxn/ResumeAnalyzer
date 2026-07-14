@@ -1,8 +1,6 @@
+@model ResumeAnalyzer.ViewModels.CompareViewModel
 @{
     ViewData["Title"] = "Karşılaştırma";
-    var resumesList = ViewBag.ResumesList as List<ResumeAnalyzer.Models.Resume> ?? new List<ResumeAnalyzer.Models.Resume>();
-    var resume1 = ViewBag.Resume1 as ResumeAnalyzer.Models.Resume;
-    var resume2 = ViewBag.Resume2 as ResumeAnalyzer.Models.Resume;
 }
 
 <div class="max-w-5xl mx-auto pb-12">
@@ -20,11 +18,16 @@
             <div class="relative">
                 <select id="selectResume1" onchange="updateCompare()" class="w-full bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-slate-200 dark:border-neutral-800 rounded-2xl pl-4 pr-10 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-4 focus:ring-slate-100 dark:focus:ring-neutral-800/40 focus:border-slate-400 dark:focus:border-neutral-700 focus:outline-none appearance-none text-left cursor-pointer hover:border-slate-300 dark:hover:border-neutral-700 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 ease-out">
                     <option value="">-- Seçiniz --</option>
-                    @foreach (var resume in resumesList)
+                    @foreach (var resume in Model.AvailableResumes)
                     {
-                        <!option value="@resume.Id" @(resume1?.Id == resume.Id ? "selected" : "")>
-                            @resume.FileName
-                        </!option>
+                        if (Model.SelectedId1 == resume.Id)
+                        {
+                            <option value="@resume.Id" selected>@resume.FileName</option>
+                        }
+                        else
+                        {
+                            <option value="@resume.Id">@resume.FileName</option>
+                        }
                     }
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-neutral-500">
@@ -44,11 +47,16 @@
             <div class="relative">
                 <select id="selectResume2" onchange="updateCompare()" class="w-full bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-slate-200 dark:border-neutral-800 rounded-2xl pl-4 pr-10 py-3 text-sm font-medium text-slate-700 dark:text-neutral-200 shadow-sm focus:ring-4 focus:ring-slate-100 dark:focus:ring-neutral-800/40 focus:border-slate-400 dark:focus:border-neutral-700 focus:outline-none appearance-none text-left cursor-pointer hover:border-slate-300 dark:hover:border-neutral-700 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 ease-out">
                     <option value="">-- Seçiniz --</option>
-                    @foreach (var resume in resumesList)
+                    @foreach (var resume in Model.AvailableResumes)
                     {
-                        <!option value="@resume.Id" @(resume2?.Id == resume.Id ? "selected" : "")>
-                            @resume.FileName
-                        </!option>
+                        if (Model.SelectedId2 == resume.Id)
+                        {
+                            <option value="@resume.Id" selected>@resume.FileName</option>
+                        }
+                        else
+                        {
+                            <option value="@resume.Id">@resume.FileName</option>
+                        }
                     }
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-400 dark:text-neutral-500">
@@ -60,7 +68,7 @@
         </div>
     </div>
 
-    @if (resume1 == null && resume2 == null)
+    @if (Model.Resume1 == null && Model.Resume2 == null)
     {
         <div class="text-center py-20 bg-white dark:bg-[#121212] border border-slate-200/60 dark:border-neutral-800 rounded-3xl p-8 shadow-sm">
             <svg width="40" height="40" class="mx-auto text-slate-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -78,9 +86,9 @@
             <!-- Satır 1: Skor -->
             <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-center bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
                 <div class="text-center">
-                    @if (resume1?.Analysis != null)
+                    @if (Model.Resume1?.Analysis != null)
                     {
-                        <span class="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">@resume1.Analysis.Score</span>
+                        <span class="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">@Model.Resume1.Analysis.Score</span>
                     }
                     else
                     {
@@ -89,9 +97,9 @@
                 </div>
                 <div class="w-28 text-center"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">ATS Skoru</span></div>
                 <div class="text-center">
-                    @if (resume2?.Analysis != null)
+                    @if (Model.Resume2?.Analysis != null)
                     {
-                        <span class="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">@resume2.Analysis.Score</span>
+                        <span class="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight transition-colors">@Model.Resume2.Analysis.Score</span>
                     }
                     else
                     {
@@ -104,9 +112,9 @@
             <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-start bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
                 <div>
                     <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
-                        @if (resume1?.Analysis?.Strengths != null && resume1.Analysis.Strengths.Any())
+                        @if (Model.Resume1?.Analysis?.Strengths != null && Model.Resume1.Analysis.Strengths.Any())
                         {
-                            @foreach (var strength in resume1.Analysis.Strengths)
+                            @foreach (var strength in Model.Resume1.Analysis.Strengths)
                             {
                                 <li class="flex items-start">
                                     <svg width="16" height="16" class="text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -125,9 +133,9 @@
                 <div class="w-28 text-center pt-1"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">Güçlü Yönler</span></div>
                 <div>
                     <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
-                        @if (resume2?.Analysis?.Strengths != null && resume2.Analysis.Strengths.Any())
+                        @if (Model.Resume2?.Analysis?.Strengths != null && Model.Resume2.Analysis.Strengths.Any())
                         {
-                            @foreach (var strength in resume2.Analysis.Strengths)
+                            @foreach (var strength in Model.Resume2.Analysis.Strengths)
                             {
                                 <li class="flex items-start">
                                     <svg width="16" height="16" class="text-green-500 mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -149,9 +157,9 @@
             <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-start bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
                 <div>
                     <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
-                        @if (resume1?.Analysis?.Weaknesses != null && resume1.Analysis.Weaknesses.Any())
+                        @if (Model.Resume1?.Analysis?.Weaknesses != null && Model.Resume1.Analysis.Weaknesses.Any())
                         {
-                            @foreach (var weakness in resume1.Analysis.Weaknesses)
+                            @foreach (var weakness in Model.Resume1.Analysis.Weaknesses)
                             {
                                 <li class="flex items-start">
                                     <svg width="16" height="16" class="text-red-400 mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -170,9 +178,9 @@
                 <div class="w-28 text-center pt-1"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">Eksikler</span></div>
                 <div>
                     <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
-                        @if (resume2?.Analysis?.Weaknesses != null && resume2.Analysis.Weaknesses.Any())
+                        @if (Model.Resume2?.Analysis?.Weaknesses != null && Model.Resume2.Analysis.Weaknesses.Any())
                         {
-                            @foreach (var weakness in resume2.Analysis.Weaknesses)
+                            @foreach (var weakness in Model.Resume2.Analysis.Weaknesses)
                             {
                                 <li class="flex items-start">
                                     <svg width="16" height="16" class="text-red-400 mr-2 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -194,9 +202,9 @@
             <div class="grid grid-cols-[1fr_auto_1fr] gap-6 items-start bg-white dark:bg-[#121212] p-6 sm:p-8 rounded-[2rem] border border-slate-100 dark:border-neutral-800 shadow-[0_4px_20px_rgb(0,0,0,0.02)] dark:shadow-black/20 transition-colors">
                 <div>
                     <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
-                        @if (resume1?.Analysis?.Suggestions != null && resume1.Analysis.Suggestions.Any())
+                        @if (Model.Resume1?.Analysis?.Suggestions != null && Model.Resume1.Analysis.Suggestions.Any())
                         {
-                            @foreach (var suggestion in resume1.Analysis.Suggestions)
+                            @foreach (var suggestion in Model.Resume1.Analysis.Suggestions)
                             {
                                 <li class="flex items-start">
                                     <svg width="8" height="8" class="text-slate-400 mr-2 flex-shrink-0 mt-1.5" fill="currentColor" viewBox="0 0 8 8">
@@ -215,9 +223,9 @@
                 <div class="w-28 text-center pt-1"><span class="text-[11px] font-bold text-slate-400 dark:text-neutral-500 uppercase tracking-widest transition-colors">Öneriler</span></div>
                 <div>
                     <ul class="text-sm text-slate-600 dark:text-neutral-400 space-y-3 px-2 sm:px-6 transition-colors">
-                        @if (resume2?.Analysis?.Suggestions != null && resume2.Analysis.Suggestions.Any())
+                        @if (Model.Resume2?.Analysis?.Suggestions != null && Model.Resume2.Analysis.Suggestions.Any())
                         {
-                            @foreach (var suggestion in resume2.Analysis.Suggestions)
+                            @foreach (var suggestion in Model.Resume2.Analysis.Suggestions)
                             {
                                 <li class="flex items-start">
                                     <svg width="8" height="8" class="text-slate-400 mr-2 flex-shrink-0 mt-1.5" fill="currentColor" viewBox="0 0 8 8">
