@@ -67,7 +67,7 @@ namespace ResumeAnalyzer.Controllers
         // CV Detaylarını (Analiz sonuçlarını) gösterecek sayfa
         public async Task<IActionResult> Details(int id)
         {
-            var resume = await _resumeService.GetResumeByIdAsync(id, HttpContext.RequestAborted);
+            var resume = await _resumeService.GetResumeByIdAsync(id, CurrentUserId, HttpContext.RequestAborted);
             if (resume == null)
             {
                 return NotFound();

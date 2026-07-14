@@ -145,14 +145,14 @@ public class ResumeService : IResumeService
         return resumes ?? new List<Resume>();
     }
 
-    public async Task<Resume?> GetResumeByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Resume?> GetResumeByIdAsync(int id, string userId, CancellationToken cancellationToken = default)
     {
-        var cacheKey = $"resume_detail_{id}";
+        var cacheKey = $"resume_detail_{id}_{userId}";
         if (!_cache.TryGetValue(cacheKey, out Resume? resume))
         {
             resume = await _context.Resumes
                 .Include(r => r.Analysis)
-                .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+                .FirstOrDefaultAsync(r => r.Id == id && r.UserId == userId, cancellationToken);
 
             if (resume != null)
             {
