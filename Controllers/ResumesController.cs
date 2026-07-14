@@ -4,6 +4,7 @@ using System.Security.Claims;
 using ResumeAnalyzer.Services;
 using ResumeAnalyzer.Models;
 using Microsoft.AspNetCore.RateLimiting;
+using FluentValidation;
 
 namespace ResumeAnalyzer.Controllers
 {
@@ -12,10 +13,12 @@ namespace ResumeAnalyzer.Controllers
     public class ResumesController : Controller
     {
         private readonly ResumeService _resumeService;
+        private readonly IValidator<IFormFile> _fileValidator;
 
-        public ResumesController(ResumeService resumeService)
+        public ResumesController(ResumeService resumeService, IValidator<IFormFile> fileValidator)
         {
             _resumeService = resumeService;
+            _fileValidator = fileValidator;
         }
 
         private string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -40,18 +43,13 @@ namespace ResumeAnalyzer.Controllers
         [EnableRateLimiting("UploadPolicy")]
         public async Task<IActionResult> Upload(IFormFile resumeFile)
         {
-            if (resumeFile == null || resumeFile.Length == 0)
+            var validationResult = await _fileValidator.ValidateAsync(resumeFile, HttpContext.RequestAborted);
+            if (!validationResult.IsValid)
             {
-                ModelState.AddModelError("", "Lütfen geçerli bir dosya yükleyin.");
-                return View();
-            }
-
-            // Backend Dosya Uzantısı Doğrulaması
-            var allowedExtensions = new[] { ".pdf", ".doc", ".docx" };
-            var fileExtension = Path.GetExtension(resumeFile.FileName)?.ToLower();
-            if (string.IsNullOrEmpty(fileExtension) || !allowedExtensions.Contains(fileExtension))
-            {
-                ModelState.AddModelError("", "Sadece PDF veya Word (.doc, .docx) dosyaları yükleyebilirsiniz.");
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError("", error.ErrorMessage);
+                }
                 return View();
             }
 
