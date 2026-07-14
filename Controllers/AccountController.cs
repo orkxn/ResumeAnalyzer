@@ -36,24 +36,31 @@ namespace ResumeAnalyzer.Controllers
                 return View(dto);
             }
 
-            var result = await _authService.LoginAsync(dto);
-
-            if (result.Succeeded)
+            try
             {
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                var result = await _authService.LoginAsync(dto);
+
+                if (result.Succeeded)
                 {
-                    return Redirect(returnUrl);
+                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    return RedirectToAction("Index", "Home");
                 }
-                return RedirectToAction("Index", "Home");
-            }
 
-            if (result.IsLockedOut)
-            {
-                ModelState.AddModelError("", "Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.");
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError("", "Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Geçersiz e-posta veya şifre.");
+                }
             }
-            else
+            catch (Exception)
             {
-                ModelState.AddModelError("", "Geçersiz e-posta veya şifre.");
+                ModelState.AddModelError("", "Giriş işlemi gerçekleştirilirken beklenmeyen bir sistem hatası oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.");
             }
 
             return View(dto);
@@ -82,17 +89,24 @@ namespace ResumeAnalyzer.Controllers
                 return View(dto);
             }
 
-            var result = await _authService.RegisterAsync(dto);
-
-            if (result.Succeeded)
+            try
             {
-                TempData["RegistrationSuccess"] = "Kayıt başarılı! Giriş yapmak için lütfen bilgilerinizi girin.";
-                return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
+                var result = await _authService.RegisterAsync(dto);
+
+                if (result.Succeeded)
+                {
+                    TempData["RegistrationSuccess"] = "Kayıt başarılı! Giriş yapmak için lütfen bilgilerinizi girin.";
+                    return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
             }
-
-            foreach (var error in result.Errors)
+            catch (Exception)
             {
-                ModelState.AddModelError("", error.Description);
+                ModelState.AddModelError("", "Kayıt işlemi gerçekleştirilirken beklenmeyen bir sistem hatası oluştu. Lütfen bilgilerinizi kontrol edip tekrar deneyin.");
             }
 
             return View(dto);
@@ -121,16 +135,23 @@ namespace ResumeAnalyzer.Controllers
                 return View();
             }
 
-            var result = await _authService.ForgotPasswordAsync(email);
-            if (result)
+            try
             {
-                ViewBag.SuccessMessage = "Şifre sıfırlama yönergeleri e-posta adresinize gönderildi.";
+                var result = await _authService.ForgotPasswordAsync(email);
+                if (result)
+                {
+                    ViewBag.SuccessMessage = "Şifre sıfırlama yönergeleri e-posta adresinize gönderildi.";
+                }
+                else
+                {
+                    // Güvenlik nedeniyle, e-posta bulunmasa bile başarılı gibi gösterebiliriz veya kullanıcıya bulunamadı diyebiliriz.
+                    // Burada bulunamadığını belirtelim:
+                    ModelState.AddModelError("", "Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.");
+                }
             }
-            else
+            catch (Exception)
             {
-                // Güvenlik nedeniyle, e-posta bulunmasa bile başarılı gibi gösterebiliriz veya kullanıcıya bulunamadı diyebiliriz.
-                // Burada bulunamadığını belirtelim:
-                ModelState.AddModelError("", "Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.");
+                ModelState.AddModelError("", "İşlem sırasında beklenmeyen bir hata oluştu. Lütfen bağlantınızı kontrol edip tekrar deneyin.");
             }
 
             return View();
