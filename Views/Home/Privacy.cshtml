@@ -3,11 +3,62 @@
 }
 
 <div class="max-w-3xl mx-auto pb-12">
-    <h1 class="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight mb-4 transition-colors">@ViewData["Title"]</h1>
+    <div class="mb-8">
+        <h1 class="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight transition-colors">Gizlilik Politikası</h1>
+        <p class="text-slate-500 dark:text-neutral-400 mt-2 transition-colors">Verilerinizin güvenliği ve gizliliği bizim için en yüksek önceliktir.</p>
+    </div>
 
-    <div class="bg-white dark:bg-[#121212] border border-slate-200/60 dark:border-neutral-800 rounded-3xl p-8 shadow-sm transition-colors">
-        <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
-            Bu sayfada sitenizin gizlilik politikası detaylandırılır. Yüklenen özgeçmişler yalnızca analiz amacıyla işlenir ve analiz tamamlandıktan sonra silinir.
-        </p>
+    <div class="bg-white dark:bg-[#121212] border border-slate-200/60 dark:border-neutral-800 rounded-3xl p-8 sm:p-10 shadow-sm transition-colors space-y-8">
+        
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">1. Toplanan Kişisel Veriler</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                CV Analiz platformunu kullanırken aşağıdaki verileriniz işlenmektedir:
+            </p>
+            <ul class="list-disc pl-5 text-sm text-slate-600 dark:text-neutral-400 space-y-1.5 leading-relaxed">
+                <li><strong>Hesap Bilgileri:</strong> Kayıt sırasında sağladığınız e-posta adresi ve şifrenizin güvenli hash'i.</li>
+                <li><strong>Özgeçmiş Verileri:</strong> Analiz edilmek üzere yüklediğiniz PDF, DOC veya DOCX formatındaki özgeçmiş dosyaları.</li>
+                <li><strong>Analiz Sonuçları:</strong> Yapay zeka modeli tarafından üretilen güçlü/zayıf yönler, puanlamalar ve geliştirme önerileri.</li>
+            </ul>
+            <br>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">2. Verilerin İşlenme Amacı</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Yüklediğiniz dosyalar ve metinler, yalnızca yapay zeka analizi gerçekleştirmek, özgeçmişinizdeki iş deneyimlerini ve becerileri anlamlandırmak, size kariyer tavsiyeleri sunmak ve analiz geçmişinizi hesabınızda saklayarak size sunmak amacıyla işlenir.
+            </p>
+            <br>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">3. Depolama ve Güvenlik</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Yüklediğiniz orijinal özgeçmiş dosyaları, API entegrasyonu vasıtasıyla güvenli bir bulut depolama alanında (Google Drive API) saklanır. Dosyalarınıza ve analiz raporlarınıza yalnızca hesabınızın sahibi olan siz erişebilirsiniz. Şifreleriniz veritabanında yüksek güvenlik standartlarında hash'lenerek saklanır.
+            </p>
+            <br>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">4. Veri Paylaşımı ve Yapay Zeka</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Yüklediğiniz özgeçmişlerin metin içerikleri, analiz işleminin yapılması için yerel yapay zeka sunucumuza (Ollama API) gönderilir. Bize iletilen veriler hiçbir şekilde üçüncü şahıslara satılmaz, reklam veya pazarlama amacıyla kullanılmaz.
+            </p>
+            <br>
+        </section>
+
+        <section class="space-y-3">
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white transition-colors">5. Kullanıcı Hakları ve Veri Silme</h2>
+            <p class="text-sm text-slate-600 dark:text-neutral-400 leading-relaxed transition-colors">
+                Kullanıcı olarak dilediğiniz zaman yüklediğiniz tüm özgeçmişleri ve analiz geçmişini platform üzerinden kalıcı olarak silebilirsiniz. Bir özgeçmişi sildiğinizde, hem veritabanımızdaki kayıtları hem de Google Drive üzerindeki asıl dosya kalıcı olarak silinmektedir.
+            </p>
+            <br>
+        </section>
+
+        <div class="border-t border-slate-100 dark:border-neutral-800 pt-6 text-xs text-slate-400 dark:text-neutral-500">
+            <br>
+            Son güncelleme tarihi: @DateTime.Now.ToString("dd MMMM yyyy")
+        </div>
+
     </div>
 </div>

@@ -1,41 +1,44 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ResumeAnalyzer.Data;
-using ResumeAnalyzer.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using ResumeAnalyzer.Services;
+using ResumeAnalyzer.Models;
 using ResumeAnalyzer.ViewModels;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ResumeAnalyzer.Controllers
 {
+    [Authorize]
+    [EnableRateLimiting("GeneralPolicy")]
     public class ResumesController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IResumeService _resumeService;
+        private readonly ResumeService _resumeService;
 
-        public ResumesController(ApplicationDbContext context, IResumeService resumeService)
+        public ResumesController(ResumeService resumeService)
         {
-            _context = context;
             _resumeService = resumeService;
         }
+
+        private string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         // Kullanıcının mevcut özgeçmişlerini listeleyeceği sayfa
         public async Task<IActionResult> Index()
         {
-            string currentUserId = "test-user-orkun";
-            
-            var resumes = await _context.Resumes
-                .Include(r => r.Analysis) 
-                .Where(r => r.UserId == currentUserId)
+            // Servis katmanından kullanıcının özgeçmişlerini al (Analysis dahil, tarihe göre sıralı)
+            var resumes = await _resumeService.GetUserResumesAsync(CurrentUserId, HttpContext.RequestAborted);
+
+            // Liste görünümü için ViewModel'e dönüştür
+            var viewModels = resumes
                 .Select(r => new ResumeListViewModel
                 {
                     Id = r.Id,
                     FileName = r.FileName,
                     CreatedAt = r.CreatedAt,
-                    Score = r.Analysis != null ? r.Analysis.Score : null 
+                    Score = r.Analysis?.Score
                 })
-                .OrderByDescending(r => r.CreatedAt) 
-                .ToListAsync();
-            
-            return View(resumes);
+                .ToList();
+
+            return View(viewModels);
         }
 
         // Yeni CV yükleme sayfasını (Form) gösteren Action
@@ -47,6 +50,8 @@ namespace ResumeAnalyzer.Controllers
 
         // Formdan gelen CV'yi karşılayan Action
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [EnableRateLimiting("UploadPolicy")]
         public async Task<IActionResult> Upload(IFormFile resumeFile)
         {
             if (resumeFile == null || resumeFile.Length == 0)
@@ -55,32 +60,34 @@ namespace ResumeAnalyzer.Controllers
                 return View();
             }
 
-            try
+            // Backend Dosya Uzantısı Doğrulaması
+            var allowedExtensions = new[] { ".pdf", ".doc", ".docx" };
+            var fileExtension = Path.GetExtension(resumeFile.FileName)?.ToLower();
+            if (string.IsNullOrEmpty(fileExtension) || !allowedExtensions.Contains(fileExtension))
             {
-                // Analiz akışını tetikliyoruz
-                var resultDto = await _resumeService.ProcessUploadAsync(
-                    resumeFile, "test-user-orkun", HttpContext.RequestAborted);
-
-                // İşlem başarılı olunca Detay sayfasına yönlendiriyoruz
-                return RedirectToAction(nameof(Details), new { id = resultDto.Id });
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"İşlem sırasında bir hata oluştu: {ex.Message}");
+                ModelState.AddModelError("", "Sadece PDF veya Word (.doc, .docx) dosyaları yükleyebilirsiniz.");
                 return View();
             }
+
+            var serviceResult = await _resumeService.ProcessUploadAsync(
+                resumeFile, CurrentUserId, HttpContext.RequestAborted);
+
+            if (!serviceResult.IsSuccess)
+            {
+                ModelState.AddModelError("", serviceResult.ErrorMessage!);
+                return View();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = serviceResult.Data!.Id });
         }
 
         // CV Detaylarını (Analiz sonuçlarını) gösterecek sayfa
         public async Task<IActionResult> Details(int id)
         {
-            var resume = await _context.Resumes
-                .Include(r => r.Analysis)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
+            var resume = await _resumeService.GetResumeByIdAsync(id, CurrentUserId, HttpContext.RequestAborted);
             if (resume == null)
             {
-                return NotFound();
+                throw new KeyNotFoundException("İstediğiniz özgeçmiş bulunamadı veya görüntüleme yetkiniz yok.");
             }
 
             return View(resume);
@@ -88,15 +95,24 @@ namespace ResumeAnalyzer.Controllers
 
         // CV Silme işlemi
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var resume = await _context.Resumes.FindAsync(id);
-            if (resume != null)
-            {
-                _context.Resumes.Remove(resume);
-                await _context.SaveChangesAsync();
-            }
+            await _resumeService.DeleteResumeAsync(id, CurrentUserId, HttpContext.RequestAborted);
             return RedirectToAction(nameof(Index));
+        }
+
+        // Çoklu CV karşılaştırma sayfası
+        [HttpGet]
+        public async Task<IActionResult> Compare(int? id1, int? id2)
+        {
+            var resumesList = await _resumeService.GetUserResumesAsync(CurrentUserId, HttpContext.RequestAborted);
+
+            ViewBag.ResumesList = resumesList;
+            ViewBag.Resume1 = resumesList.FirstOrDefault(r => r.Id == id1);
+            ViewBag.Resume2 = resumesList.FirstOrDefault(r => r.Id == id2);
+
+            return View();
         }
     }
 }

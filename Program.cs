@@ -1,9 +1,10 @@
 using ResumeAnalyzer.Services;
-using ResumeAnalyzer.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ResumeAnalyzer.Models;
 using ResumeAnalyzer.Data;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +17,63 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
 
 // dependency-injection için
-builder.Services.AddScoped<ITextExtractorService, TextExtractorService>();
-builder.Services.AddScoped<IGoogleDriveService, GoogleDriveService>();
-builder.Services.AddHttpClient<IAiAnalysisService, AiAnalysisService>();
-builder.Services.AddScoped<IResumeService, ResumeService>();
+builder.Services.AddScoped<TextExtractorService>();
+builder.Services.AddScoped<GoogleDriveService>();
+builder.Services.AddHttpClient<AiAnalysisService>();
+builder.Services.AddScoped<ResumeService>();
+builder.Services.AddScoped<AuthService>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("UploadPolicy", httpContext =>
+    {
+        var userId = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
+            ?? httpContext.Connection.RemoteIpAddress?.ToString() 
+            ?? "anonymous";
+
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: userId,
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 3,
+                QueueLimit = 0,
+                Window = TimeSpan.FromMinutes(1)
+            });
+    });
+
+    options.AddPolicy("GeneralPolicy", httpContext =>
+    {
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous";
+
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: ip,
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 60,
+                QueueLimit = 0,
+                SegmentsPerWindow = 6,
+                Window = TimeSpan.FromMinutes(1)
+            });
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        context.HttpContext.Response.ContentType = "text/plain; charset=utf-8";
+        await context.HttpContext.Response.WriteAsync("Çok fazla istek gönderdiniz. Lütfen daha sonra tekrar deneyin.", token);
+    };
+});
 
 var app = builder.Build();
 
@@ -32,16 +84,20 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseExceptionHandler("/Home/Error");
+
+app.UseStatusCodePagesWithReExecute("/Home/Error/{0}");
 
 app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapStaticAssets();
 

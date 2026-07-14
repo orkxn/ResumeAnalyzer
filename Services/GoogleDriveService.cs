@@ -5,11 +5,10 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Microsoft.Extensions.Configuration;
 using ResumeAnalyzer.DTOs;
-using ResumeAnalyzer.Services.Interface;
 
 namespace ResumeAnalyzer.Services;
 
-public class GoogleDriveService : IGoogleDriveService
+public class GoogleDriveService
 {
     private readonly IConfiguration _configuration;
     private const string RootFolderName = "ResumeAnalyzerFiles";
@@ -51,7 +50,7 @@ public class GoogleDriveService : IGoogleDriveService
         });
     }
 
-    public async Task<GoogleDriveUploadResultDto> UploadFileAsync(Stream fileStream, string fileName, string contentType, string userId, CancellationToken cancellationToken = default)
+    public async Task<(string FileId, string WebViewLink)> UploadFileAsync(Stream fileStream, string fileName, string contentType, string userId, CancellationToken cancellationToken = default)
     {
         var service = await GetDriveServiceAsync();
 
@@ -76,11 +75,23 @@ public class GoogleDriveService : IGoogleDriveService
             throw new InvalidOperationException("Google Drive yüklemesi başarısız oldu, yanıt boş döndü.");
         }
 
-        return new GoogleDriveUploadResultDto
+        // Dosya izinlerini "Bağlantıya sahip herkes görüntüleyebilir" olarak ayarla
+        try
         {
-            FileId = uploadedFile.Id,
-            WebViewLink = uploadedFile.WebViewLink
-        };
+            var permission = new Google.Apis.Drive.v3.Data.Permission
+            {
+                Type = "anyone",
+                Role = "reader"
+            };
+            await service.Permissions.Create(permission, uploadedFile.Id).ExecuteAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            // İzin ayarlanamazsa bile yükleme tamamlandığı için işlemi kesmeyip logluyoruz
+            Console.WriteLine($"Google Drive dosya izinleri güncellenirken hata oluştu: {ex.Message}");
+        }
+
+        return (uploadedFile.Id, uploadedFile.WebViewLink);
     }
 
     private async Task<string> GetOrCreateFolderAsync(DriveService service, string folderName, string? parentId)
