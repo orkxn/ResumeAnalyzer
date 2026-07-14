@@ -52,6 +52,22 @@
             if (file) {
                 var fileName = file.name;
                 var fileExtension = fileName.substring(fileName.lastIndexOf('.')).toUpperCase();
+                
+                // Uzantı doğrulaması
+                var allowedExtensions = ['.PDF', '.DOC', '.DOCX'];
+                if (!allowedExtensions.includes(fileExtension)) {
+                    alert("Sadece PDF veya Word (.doc, .docx) formatındaki dosyaları yükleyebilirsiniz.");
+                    e.target.value = ''; // Seçimi sıfırla
+                    
+                    // Arayüzü eski haline getir
+                    document.getElementById('uploadTitle').innerText = "Dosya seçmek için tıklayın veya sürükleyin";
+                    document.getElementById('uploadSubtitle').innerText = "Desteklenen formatlar: PDF, DOCX (Maks. 5MB)";
+                    var iconWrapper = document.getElementById('iconWrapper');
+                    iconWrapper.classList.remove('text-green-500', 'dark:text-green-400');
+                    iconWrapper.classList.add('text-gray-300', 'dark:text-neutral-600', 'group-hover:text-slate-800', 'dark:group-hover:text-neutral-300');
+                    return;
+                }
+
                 var fileSize = (file.size / 1024 / 1024).toFixed(2) + " MB";
 
                 // Başlığı dosya adı ile güncelle

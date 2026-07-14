@@ -43,6 +43,15 @@ namespace ResumeAnalyzer.Controllers
                 return View();
             }
 
+            // Backend Dosya Uzantısı Doğrulaması
+            var allowedExtensions = new[] { ".pdf", ".doc", ".docx" };
+            var fileExtension = Path.GetExtension(resumeFile.FileName)?.ToLower();
+            if (string.IsNullOrEmpty(fileExtension) || !allowedExtensions.Contains(fileExtension))
+            {
+                ModelState.AddModelError("", "Sadece PDF veya Word (.doc, .docx) dosyaları yükleyebilirsiniz.");
+                return View();
+            }
+
             try
             {
                 var resultDto = await _resumeService.ProcessUploadAsync(
