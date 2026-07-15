@@ -12,15 +12,18 @@ namespace ResumeAnalyzer.Controllers
         private readonly AuthService _authService;
         private readonly IValidator<LoginRequestDto> _loginValidator;
         private readonly IValidator<RegisterRequestDto> _registerValidator;
+        private readonly IValidator<ResetPasswordRequestDto> _resetPasswordValidator;
 
         public AccountController(
             AuthService authService,
             IValidator<LoginRequestDto> loginValidator,
-            IValidator<RegisterRequestDto> registerValidator)
+            IValidator<RegisterRequestDto> registerValidator,
+            IValidator<ResetPasswordRequestDto> resetPasswordValidator)
         {
             _authService = authService;
             _loginValidator = loginValidator;
             _registerValidator = registerValidator;
+            _resetPasswordValidator = resetPasswordValidator;
         }
 
         [HttpGet]
@@ -133,7 +136,14 @@ namespace ResumeAnalyzer.Controllers
                 return View();
             }
 
-            var serviceResult = await _authService.ForgotPasswordAsync(email);
+            var callbackUrl = Url.Action("ResetPassword", "Account", null, Request.Scheme);
+            if (string.IsNullOrEmpty(callbackUrl))
+            {
+                ModelState.AddModelError("", "Geri dönüş URL'i oluşturulamadı.");
+                return View();
+            }
+
+            var serviceResult = await _authService.ForgotPasswordAsync(email, callbackUrl);
             if (!serviceResult.IsSuccess)
             {
                 ModelState.AddModelError("", serviceResult.ErrorMessage!);
@@ -142,6 +152,44 @@ namespace ResumeAnalyzer.Controllers
 
             ViewBag.SuccessMessage = "Şifre sıfırlama yönergeleri e-posta adresinize gönderildi.";
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string? token = null, string? email = null)
+        {
+            if (token == null || email == null)
+            {
+                return RedirectToAction("Login");
+            }
+            var model = new ResetPasswordRequestDto { Token = token, Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto dto)
+        {
+            var validation = await _resetPasswordValidator.ValidateAsync(dto, HttpContext.RequestAborted);
+            if (!validation.IsValid)
+            {
+                foreach (var error in validation.Errors)
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                return View(dto);
+            }
+
+            var serviceResult = await _authService.ResetPasswordAsync(dto);
+            if (!serviceResult.IsSuccess)
+            {
+                if (serviceResult.Errors?.Count > 0)
+                    foreach (var error in serviceResult.Errors)
+                        ModelState.AddModelError("", error);
+                else
+                    ModelState.AddModelError("", serviceResult.ErrorMessage!);
+                return View(dto);
+            }
+
+            TempData["RegistrationSuccess"] = "Şifreniz başarıyla sıfırlandı. Yeni şifrenizle giriş yapabilirsiniz.";
+            return RedirectToAction(nameof(Login));
         }
     }
 }

@@ -31,6 +31,7 @@ builder.Services.AddScoped<GoogleDriveService>();
 builder.Services.AddHttpClient<AiAnalysisService>();
 builder.Services.AddScoped<ResumeService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<EmailSenderService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
