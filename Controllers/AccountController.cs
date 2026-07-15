@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using ResumeAnalyzer.DTOs;
 using ResumeAnalyzer.Services;
 using Microsoft.AspNetCore.RateLimiting;
-using FluentValidation;
 
 namespace ResumeAnalyzer.Controllers
 {
@@ -10,20 +9,10 @@ namespace ResumeAnalyzer.Controllers
     public class AccountController : Controller
     {
         private readonly AuthService _authService;
-        private readonly IValidator<LoginRequestDto> _loginValidator;
-        private readonly IValidator<RegisterRequestDto> _registerValidator;
-        private readonly IValidator<ResetPasswordRequestDto> _resetPasswordValidator;
 
-        public AccountController(
-            AuthService authService,
-            IValidator<LoginRequestDto> loginValidator,
-            IValidator<RegisterRequestDto> registerValidator,
-            IValidator<ResetPasswordRequestDto> resetPasswordValidator)
+        public AccountController(AuthService authService)
         {
             _authService = authService;
-            _loginValidator = loginValidator;
-            _registerValidator = registerValidator;
-            _resetPasswordValidator = resetPasswordValidator;
         }
 
         [HttpGet]
@@ -42,11 +31,8 @@ namespace ResumeAnalyzer.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            var validation = await _loginValidator.ValidateAsync(dto, HttpContext.RequestAborted);
-            if (!validation.IsValid)
+            if (!ModelState.IsValid)
             {
-                foreach (var error in validation.Errors)
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 return View(dto);
             }
 
@@ -88,11 +74,8 @@ namespace ResumeAnalyzer.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            var validation = await _registerValidator.ValidateAsync(dto, HttpContext.RequestAborted);
-            if (!validation.IsValid)
+            if (!ModelState.IsValid)
             {
-                foreach (var error in validation.Errors)
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 return View(dto);
             }
 
@@ -169,11 +152,8 @@ namespace ResumeAnalyzer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequestDto dto)
         {
-            var validation = await _resetPasswordValidator.ValidateAsync(dto, HttpContext.RequestAborted);
-            if (!validation.IsValid)
+            if (!ModelState.IsValid)
             {
-                foreach (var error in validation.Errors)
-                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 return View(dto);
             }
 
