@@ -101,7 +101,8 @@ namespace ResumeAnalyzer.Services
             }
             catch (System.Exception ex)
             {
-                return ServiceResult<bool>.Failure($"E-posta gönderilirken bir hata oluştu: {ex.Message}");
+                System.Console.Error.WriteLine($"ForgotPassword failed: {ex}");
+                return ServiceResult<bool>.Failure("Şifre sıfırlama e-postası gönderilirken beklenmeyen bir sistem hatası oluştu. Lütfen daha sonra tekrar deneyin.");
             }
         }
 

@@ -112,7 +112,8 @@ public class ResumeService
         }
         catch (System.Exception ex)
         {
-            return ServiceResult<ResumeResponseDto>.Failure(ex.Message);
+            System.Console.Error.WriteLine($"Resume processing failed: {ex}");
+            return ServiceResult<ResumeResponseDto>.Failure("Özgeçmiş yüklenirken veya analiz edilirken beklenmeyen bir sistem hatası oluştu. Lütfen bağlantılarınızı kontrol edip tekrar deneyin.");
         }
     }
 
