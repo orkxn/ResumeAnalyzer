@@ -2,50 +2,64 @@
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<!-- Arka Planda Çok Hafif Dekoratif Bir Parlama (Apple Tarzı) -->
-<div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80 transition-opacity duration-300" aria-hidden="true">
-    <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-slate-200 to-slate-400 dark:from-neutral-800 dark:to-neutral-700 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
-</div>
+<!-- Hero -->
+<section class="py-16 sm:py-24 text-center relative overflow-hidden">
+    <!-- Decorative blur orb -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-500/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
-<div class="relative pb-12 sm:pb-20 lg:pb-24">
-    
-    <!-- Hero (Başlık) Alanı -->
-    <div class="text-center max-w-3xl mx-auto px-4 mb-12">
-        <br>
-        <br>
-        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-6 transition-colors duration-300">
-            Özgeçmişinizi saniyeler içinde <br class="hidden sm:block" />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-900 dark:from-neutral-400 dark:to-neutral-200">yapay zeka ile analiz edin.</span>
+    <div class="relative max-w-3xl mx-auto px-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 mb-6 text-xs font-medium text-blue-700 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 rounded-full">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            Yapay Zeka Destekli Analiz
+        </span>
+
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 leading-tight">
+            Özgeçmişinizi saniyeler içinde
+            <span class="text-blue-600 dark:text-blue-400"> yapay zeka ile analiz edin.</span>
         </h1>
-        <p class="text-lg leading-8 text-slate-500 dark:text-neutral-400 transition-colors duration-300">
+
+        <p class="text-lg text-gray-500 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             Dosyalarınızı sisteme ekleyin. Akıllı algoritmalarımız güçlü yönlerinizi, eksiklerinizi ve potansiyel eşleşmelerinizi anında ortaya çıkarsın.
         </p>
-    </div>
 
-    <!-- CTA Alanı (Apple Tarzı) -->
-    <div class="text-center" style="margin-top: 50px; margin-bottom: 100px;">
-        <a asp-controller="Resumes" asp-action="Upload" class="inline-flex justify-center items-center px-8 py-3.5 text-sm font-semibold text-white dark:text-neutral-900 bg-slate-900 dark:bg-neutral-200 rounded-full hover:bg-black dark:hover:bg-neutral-300 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform">
-            Analize Başla
-            <svg width="16" height="16" class="ml-2 -mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-        </a>
-    </div>
-
-    <!-- Güven / Özellik Bandı -->
-    <div class="max-w-4xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center pt-12 transition-colors duration-300">
-        <div>
-            <h4 class="text-slate-900 dark:text-white font-semibold mb-1 transition-colors duration-300">Hızlı Sonuç</h4>
-            <p class="text-sm text-slate-500 dark:text-neutral-400 transition-colors duration-300">Saniyeler içinde detaylı skorlama.</p>
-        </div>
-        <div>
-            <h4 class="text-slate-900 dark:text-white font-semibold mb-1 transition-colors duration-300">Akıllı Eşleşme</h4>
-            <p class="text-sm text-slate-500 dark:text-neutral-400 transition-colors duration-300">Sektör standartlarına göre kıyaslama.</p>
-        </div>
-        <div>
-            <h4 class="text-slate-900 dark:text-white font-semibold mb-1 transition-colors duration-300">Gizlilik Odaklı</h4>
-            <p class="text-sm text-slate-500 dark:text-neutral-400 transition-colors duration-300">Verileriniz analizden sonra silinir.</p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a asp-controller="Resumes" asp-action="Upload"
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 transform">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                Analize Başla
+            </a>
+            <a asp-controller="Resumes" asp-action="Index"
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-all shadow-sm hover:-translate-y-0.5 transform">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                Özgeçmişlerim
+            </a>
         </div>
     </div>
+</section>
 
-</div>
+<!-- Features -->
+<section class="py-12 max-w-5xl mx-auto px-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center mb-4">
+                <i data-lucide="zap" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Hızlı Sonuç</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Saniyeler içinde detaylı skorlama ve yapay zeka önerileri.</p>
+        </div>
+        <div class="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/50 rounded-xl flex items-center justify-center mb-4">
+                <i data-lucide="git-compare" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Akıllı Eşleşme</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Sektör standartlarına ve iş ilanlarına göre kıyaslama.</p>
+        </div>
+        <div class="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div class="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center mb-4">
+                <i data-lucide="shield-check" class="w-5 h-5 text-green-600 dark:text-green-400"></i>
+            </div>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Gizlilik Odaklı</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Verileriniz güvende, güçlü şifreleme ve gizlilik politikası.</p>
+        </div>
+    </div>
+</section>

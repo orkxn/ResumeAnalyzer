@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "flowbite/plugin";
 @custom-variant dark (&:is(.dark *));
 
 @layer base {

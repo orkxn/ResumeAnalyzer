@@ -11,82 +11,125 @@
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
-            document.documentElement.classList.remove('dark')
+            document.documentElement.classList.remove('dark');
         }
     </script>
 </head>
-<body class="bg-[#fbfbfd] dark:bg-[#0a0a0a] text-slate-900 dark:text-neutral-200 font-sans antialiased flex flex-col min-h-screen transition-colors duration-300">
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans antialiased flex flex-col min-h-screen">
 
-    <header class="sticky top-0 z-50 bg-white/70 dark:bg-[#0a0a0a]/80 backdrop-blur-md border-b border-gray-200/50 dark:border-neutral-800 transition-colors duration-300">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                
-                <div class="flex-shrink-0 flex items-center">
-                    <!-- LOGO: dark:text-white eklendi -->
-                    <a asp-controller="Home" asp-action="Index" class="text-xl font-semibold tracking-tight text-slate-900 dark:text-white">
-                        CV<span class="text-slate-500 dark:text-neutral-400">Analiz</span>
-                    </a>
-                </div>
+    <nav class="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
 
-                <nav class="hidden md:flex space-x-8">
-                    @if (User.Identity?.IsAuthenticated == true)
-                    {
-                        <!-- MENÜ LİNKLERİ: dark:text-neutral-400 ve dark:hover:text-white eklendi -->
-                        <a asp-controller="Resumes" asp-action="Index" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Özgeçmişler</a>
-                        <a asp-controller="Resumes" asp-action="Upload" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Yeni Yükle</a>
-                        <a asp-controller="Resumes" asp-action="Compare" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Karşılaştır</a>
-                    }
-                </nav>
+                <!-- Logo -->
+                <a asp-controller="Home" asp-action="Index" class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                    <i data-lucide="file-scan" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+                    CV<span class="text-gray-400 dark:text-gray-500 font-normal">Analiz</span>
+                </a>
 
-                <div class="flex items-center space-x-4">
-                    
-                    <button id="theme-toggle" type="button" class="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800 rounded-full transition-all focus:outline-none mr-2" title="Temayı Değiştir">
-                        <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                        </svg>
-                        <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                        </svg>
+                <!-- Desktop Nav Links -->
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="hidden md:flex items-center gap-6">
+                        <a asp-controller="Resumes" asp-action="Index" class="flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                            Özgeçmişler
+                        </a>
+                        <a asp-controller="Resumes" asp-action="Upload" class="flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            Yeni Yükle
+                        </a>
+                        <a asp-controller="Resumes" asp-action="Compare" class="flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            <i data-lucide="git-compare" class="w-4 h-4"></i>
+                            Karşılaştır
+                        </a>
+                    </div>
+                }
+
+                <!-- Right Actions -->
+                <div class="flex items-center gap-3">
+                    <!-- Theme toggle -->
+                    <button id="theme-toggle" type="button" class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Temayı Değiştir">
+                        <i data-lucide="sun" id="theme-toggle-light-icon" class="w-4 h-4 hidden"></i>
+                        <i data-lucide="moon" id="theme-toggle-dark-icon" class="w-4 h-4 hidden"></i>
                     </button>
 
                     @if (User.Identity?.IsAuthenticated == true)
                     {
-                        <span class="text-sm font-medium text-slate-700 dark:text-neutral-300">@User.Identity.Name</span>
-                        <a asp-controller="Account" asp-action="Logout" class="text-sm font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors">Çıkış Yap</a>
+                        <span class="hidden sm:block text-sm text-gray-600 dark:text-gray-400">@User.Identity.Name</span>
+                        <a asp-controller="Account" asp-action="Logout" class="text-sm font-medium text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                            Çıkış
+                        </a>
                     }
                     else
                     {
-                        <a asp-controller="Account" asp-action="Register" class="text-sm font-medium text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition-colors">Kayıt Ol</a>
-                        <a asp-controller="Account" asp-action="Login" class="text-sm font-medium bg-slate-900 dark:bg-neutral-200 text-white dark:text-neutral-900 px-4 py-2 rounded-full hover:bg-black dark:hover:bg-neutral-300 transition-all shadow-sm">
+                        <a asp-controller="Account" asp-action="Register" class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                            Kayıt Ol
+                        </a>
+                        <a asp-controller="Account" asp-action="Login" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-lg transition-colors shadow-sm">
                             Giriş Yap
                         </a>
                     }
-                </div>
 
+                    <!-- Mobile hamburger -->
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <button data-collapse-toggle="mobile-menu" type="button" class="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+                    }
+                </div>
             </div>
         </div>
-    </header>
 
-    <main class="flex-grow max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
+        <!-- Mobile Menu -->
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-800">
+                <div class="px-4 py-3 space-y-1">
+                    <a asp-controller="Resumes" asp-action="Index" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i> Özgeçmişler
+                    </a>
+                    <a asp-controller="Resumes" asp-action="Upload" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="upload" class="w-4 h-4"></i> Yeni Yükle
+                    </a>
+                    <a asp-controller="Resumes" asp-action="Compare" class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <i data-lucide="git-compare" class="w-4 h-4"></i> Karşılaştır
+                    </a>
+                </div>
+            </div>
+        }
+    </nav>
+
+    <main class="flex-grow max-w-screen-xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-10">
         @RenderBody()
     </main>
 
-    <footer class="bg-white dark:bg-[#0a0a0a] border-t border-gray-200/50 dark:border-neutral-800 mt-auto transition-colors duration-300">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-between">
-            <p class="text-xs text-slate-400 dark:text-neutral-500">
-                &copy; @DateTime.Now.Year - CV Analiz. Tüm hakları saklıdır.
+    <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-auto">
+        <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-xs text-gray-400 dark:text-gray-500">
+                &copy; @DateTime.Now.Year CV Analiz. Tüm hakları saklıdır.
             </p>
-            <div class="flex space-x-4 text-xs text-slate-400 dark:text-neutral-500">
-                <a asp-controller="Home" asp-action="Privacy" class="hover:text-slate-600 dark:hover:text-neutral-300 transition-colors">Gizlilik Politikası</a>
-                <a asp-controller="Home" asp-action="Terms" class="hover:text-slate-600 dark:hover:text-neutral-300 transition-colors">Kullanım Şartları</a>
+            <div class="flex gap-4 text-xs text-gray-400 dark:text-gray-500">
+                <a asp-controller="Home" asp-action="Privacy" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Gizlilik Politikası</a>
+                <a asp-controller="Home" asp-action="Terms" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Kullanım Şartları</a>
             </div>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <!-- Flowbite JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
+        // Render Lucide icons
+        lucide.createIcons();
+
+        // Theme toggle
         (function () {
             var darkIcon = document.getElementById('theme-toggle-dark-icon');
             var lightIcon = document.getElementById('theme-toggle-light-icon');
@@ -104,13 +147,14 @@
                 var isDark = document.documentElement.classList.toggle('dark');
                 localStorage.setItem('color-theme', isDark ? 'dark' : 'light');
                 syncIcons();
+                lucide.createIcons();
             });
 
-            // Kullanıcı manuel seçim yapmadıysa sistem temasını takip et
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
                 if (!localStorage.getItem('color-theme')) {
                     document.documentElement.classList.toggle('dark', e.matches);
                     syncIcons();
+                    lucide.createIcons();
                 }
             });
         })();

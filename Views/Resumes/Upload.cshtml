@@ -3,88 +3,80 @@
 }
 
 <div class="max-w-2xl mx-auto">
+    <!-- Header -->
     <div class="mb-8 text-center">
-        <h1 class="text-3xl font-semibold text-slate-900 dark:text-white tracking-tight transition-colors">Yeni Özgeçmiş Yükle</h1>
-        <p class="text-slate-500 dark:text-neutral-400 mt-2 transition-colors">Yapay zeka analizi için PDF veya Word formatında bir dosya seçin.</p>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Yeni Özgeçmiş Yükle</h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-2">Yapay zeka analizi için PDF veya Word formatında bir dosya seçin.</p>
     </div>
 
-    <div class="bg-white dark:bg-[#121212] p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-black/30 border border-gray-100 dark:border-neutral-800 transition-colors">
+    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-8">
         <form id="uploadForm" asp-controller="Resumes" asp-action="Upload" method="post" enctype="multipart/form-data" class="space-y-6">
-            <!-- Hata Bilgilendirme Kutusu (Hem server hem de client tarafı için) -->
+            <!-- Error container -->
             @{
                 var hasErrors = !ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0;
             }
-            <div id="jsErrorContainer" class="p-4 bg-red-600 dark:bg-red-800 text-white rounded-2xl flex items-start gap-3 shadow-md @(hasErrors ? "" : "hidden") transition-all duration-300">
-                <div class="flex-shrink-0 mt-0.5">
-                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-                <div class="flex-1">
-                    <h3 class="text-sm font-bold text-white mb-1">Bir sorun oluştu</h3>
-                    <ul id="jsErrorList" class="list-disc list-inside text-sm text-red-100 dark:text-red-100 space-y-1">
-                        @if (hasErrors && ViewData.ModelState[""] != null)
+            <div id="jsErrorContainer" class="@(hasErrors ? "" : "hidden") flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 rounded-xl text-sm">
+                <i data-lucide="circle-x" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                <ul id="jsErrorList" class="list-disc list-inside space-y-1">
+                    @if (hasErrors && ViewData.ModelState[""] != null)
+                    {
+                        @foreach (var error in ViewData.ModelState[""]!.Errors)
                         {
-                            @foreach (var error in ViewData.ModelState[""]!.Errors)
-                            {
-                                <li>@error.ErrorMessage</li>
-                            }
+                            <li>@error.ErrorMessage</li>
                         }
-                    </ul>
+                    }
+                </ul>
+            </div>
+
+            <!-- File Drop Zone (Flowbite-style) -->
+            <div id="dropZone"
+                 class="relative flex flex-col items-center justify-center w-full h-56 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:border-blue-400 dark:hover:border-blue-600 transition-all group">
+                <input type="file" id="fileInput" name="resumeFile" accept=".pdf,.doc,.docx"
+                       class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required />
+                <div class="flex flex-col items-center gap-3 pointer-events-none">
+                    <div id="iconWrapper" class="w-12 h-12 text-gray-300 dark:text-gray-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
+                        <i data-lucide="file-up" class="w-full h-full"></i>
+                    </div>
+                    <div class="text-center">
+                        <p id="uploadTitle" class="text-sm font-medium text-gray-700 dark:text-gray-300">Dosya seçmek için tıklayın veya sürükleyin</p>
+                        <p id="uploadSubtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-1">PDF, DOC, DOCX — Maks. 5MB</p>
+                    </div>
                 </div>
             </div>
 
-            <div id="dropZone" class="border-2 border-dashed border-gray-200 dark:border-neutral-700 rounded-2xl p-12 text-center hover:bg-[#fbfbfd] dark:hover:bg-neutral-800/50 hover:border-slate-300 dark:hover:border-neutral-600 transition-all cursor-pointer relative group">
-
-                <input type="file" id="fileInput" name="resumeFile" accept=".pdf,.doc,.docx" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required />
-
-                <div id="iconWrapper" class="mx-auto w-16 h-16 mb-4 text-gray-300 dark:text-neutral-600 group-hover:text-slate-800 dark:group-hover:text-neutral-300 transition-colors duration-300">
-                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-full h-full">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6.75 12-3-3m0 0-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                    </svg>
-                </div>
-
-                <h3 id="uploadTitle" class="text-sm font-medium text-slate-900 dark:text-white mb-1 transition-colors">Dosya seçmek için tıklayın veya sürükleyin</h3>
-                <p id="uploadSubtitle" class="text-xs text-slate-500 dark:text-neutral-400 transition-colors">Desteklenen formatlar: PDF, DOC, DOCX (Maks. 5MB)</p>
+            <!-- Info banner -->
+            <div class="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/50 rounded-xl text-sm text-blue-700 dark:text-blue-300">
+                <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                <p>Özgeçmişiniz yüklendikten hemen sonra yapay zeka tarafından analiz edilecektir. Bu işlem birkaç saniye sürebilir.</p>
             </div>
 
-            <div class="bg-slate-50 dark:bg-neutral-800/50 text-slate-700 dark:text-neutral-300 text-sm p-4 rounded-2xl flex items-start gap-3 border border-slate-100 dark:border-neutral-800 transition-colors">
-                <svg class="w-5 h-5 text-slate-900 dark:text-white flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-                </svg>
-                <p>Özgeçmişiniz yüklendikten hemen sonra yapay zeka tarafından analiz edilecek ve veri çıkarımı yapılacaktır. Bu işlem birkaç saniye sürebilir.</p>
-            </div>
-
-            <button type="submit" class="w-full bg-slate-900 dark:bg-neutral-200 hover:bg-black dark:hover:bg-neutral-300 text-white dark:text-neutral-900 font-medium py-3 rounded-2xl transition-all shadow-md hover:shadow-lg">
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-semibold rounded-xl text-sm px-5 py-3.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 transition-colors shadow-sm">
+                <i data-lucide="brain-circuit" class="w-4 h-4"></i>
                 Analizi Başlat
             </button>
         </form>
     </div>
 </div>
 
-<!-- Yükleme / Analiz Bekleme Ekranı (Overlay) -->
-<div id="loadingOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-[#0a0a0a] hidden">
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm hidden">
     <div class="max-w-sm w-full px-6 text-center space-y-8">
-        
-        <!-- Spinner -->
-        <div class="mx-auto w-16 h-16">
-            <svg class="animate-spin w-full h-full text-slate-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <div class="mx-auto w-16 h-16 text-blue-600 dark:text-blue-400">
+            <svg class="animate-spin w-full h-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
         </div>
-
         <div class="space-y-2">
-            <h2 id="loadingStatusText" class="text-xl font-semibold text-slate-900 dark:text-white">Dosyanız yükleniyor...</h2>
-            <p class="text-sm text-slate-500 dark:text-neutral-400">Lütfen sayfayı kapatmayın.</p>
+            <h2 id="loadingStatusText" class="text-xl font-semibold text-gray-900 dark:text-white">Dosyanız yükleniyor...</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Lütfen sayfayı kapatmayın.</p>
         </div>
-
-        <!-- İlerleme Çubuğu -->
-        <div class="w-full bg-slate-200 dark:bg-neutral-800 rounded-full h-2 overflow-hidden">
-            <div id="loadingProgressBar" class="h-full bg-slate-900 dark:bg-white rounded-full transition-all duration-500 ease-out" style="width: 0%;"></div>
+        <!-- Progress bar -->
+        <div class="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2 overflow-hidden">
+            <div id="loadingProgressBar" class="h-full bg-blue-600 rounded-full transition-all duration-500 ease-out" style="width: 0%;"></div>
         </div>
-
-        <p id="loadingPercentage" class="text-sm font-medium text-slate-400 dark:text-neutral-500">0%</p>
+        <p id="loadingPercentage" class="text-sm font-medium text-gray-400 dark:text-gray-500">0%</p>
     </div>
 </div>
 
@@ -93,137 +85,84 @@
         var dropZone = document.getElementById('dropZone');
         var fileInput = document.getElementById('fileInput');
         var uploadTitle = document.getElementById('uploadTitle');
+        var iconWrapper = document.getElementById('iconWrapper');
+        var allowedExtensions = ['.PDF', '.DOC', '.DOCX'];
 
-        // Dosya sürüklenirken
+        function showError(msg) {
+            document.getElementById('jsErrorList').innerHTML = '<li>' + msg + '</li>';
+            document.getElementById('jsErrorContainer').classList.remove('hidden');
+        }
+
         fileInput.addEventListener('dragenter', function () {
-            dropZone.classList.add('border-slate-400', 'bg-slate-50', 'dark:bg-neutral-800/40');
+            dropZone.classList.add('border-blue-400', 'dark:border-blue-600', 'bg-blue-50', 'dark:bg-blue-900/20');
             uploadTitle.innerText = "Yüklemek için dosyayı bırakın";
         });
 
-        fileInput.addEventListener('dragover', function (e) {
-            e.preventDefault();
-        });
+        fileInput.addEventListener('dragover', function (e) { e.preventDefault(); });
 
-        // Dosya sürüklenmekten vazgeçildiğinde / çıkıldığında
         fileInput.addEventListener('dragleave', function () {
-            dropZone.classList.remove('border-slate-400', 'bg-slate-50', 'dark:bg-neutral-800/40');
-            if (fileInput.files && fileInput.files.length > 0) {
-                uploadTitle.innerText = fileInput.files[0].name;
-            } else {
-                uploadTitle.innerText = "Dosya seçmek için tıklayın veya sürükleyin";
-            }
+            dropZone.classList.remove('border-blue-400', 'dark:border-blue-600', 'bg-blue-50', 'dark:bg-blue-900/20');
+            uploadTitle.innerText = fileInput.files.length > 0 ? fileInput.files[0].name : "Dosya seçmek için tıklayın veya sürükleyin";
         });
 
-        fileInput.addEventListener('drop', function () {
-            dropZone.classList.remove('border-slate-400', 'bg-slate-50', 'dark:bg-neutral-800/40');
-        });
-
-        // Dosya Seçim Listener'ı
-        document.getElementById('fileInput').addEventListener('change', function (e) {
+        fileInput.addEventListener('change', function (e) {
             var file = e.target.files[0];
-            if (file) {
-                var fileName = file.name;
-                var fileExtension = fileName.substring(fileName.lastIndexOf('.')).toUpperCase();
-                
-                // Uzantı doğrulaması
-                var allowedExtensions = ['.PDF', '.DOC', '.DOCX'];
-                if (!allowedExtensions.includes(fileExtension)) {
-                    // Hata kutusunu güncelle ve göster
-                    document.getElementById('jsErrorList').innerHTML = '<li>Sadece PDF veya Word (.doc, .docx) formatındaki dosyaları yükleyebilirsiniz.</li>';
-                    document.getElementById('jsErrorContainer').classList.remove('hidden');
+            if (!file) return;
 
-                    e.target.value = ''; // Seçimi sıfırla
-                    
-                    // Arayüzü eski haline getir
-                    document.getElementById('uploadTitle').innerText = "Dosya seçmek için tıklayın veya sürükleyin";
-                    document.getElementById('uploadSubtitle').innerText = "Desteklenen formatlar: PDF, DOC, DOCX (Maks. 5MB)";
-                    var iconWrapper = document.getElementById('iconWrapper');
-                    iconWrapper.classList.remove('text-green-500', 'dark:text-green-400');
-                    iconWrapper.classList.add('text-gray-300', 'dark:text-neutral-600', 'group-hover:text-slate-800', 'dark:group-hover:text-neutral-300');
-                    return;
-                }
-
-                // Geçerli dosya seçildiğinde hata kutusunu gizle
-                document.getElementById('jsErrorContainer').classList.add('hidden');
-
-                var fileSize = (file.size / 1024 / 1024).toFixed(2) + " MB";
-
-                // Başlığı dosya adı ile güncelle
-                document.getElementById('uploadTitle').innerText = fileName;
-
-                // Alt başlığı format ve boyut rozetiyle süsle
-                document.getElementById('uploadSubtitle').innerHTML = 
-                    '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800/50">' + fileExtension + '</span> • ' + fileSize;
-
-                // İkon rengini yeşile çevir (başarılı seçim görseli)
-                var iconWrapper = document.getElementById('iconWrapper');
-                iconWrapper.classList.remove('text-gray-300', 'dark:text-neutral-600', 'group-hover:text-slate-800', 'dark:group-hover:text-neutral-300');
-                iconWrapper.classList.add('text-green-500', 'dark:text-green-400');
+            var ext = file.name.substring(file.name.lastIndexOf('.')).toUpperCase();
+            if (!allowedExtensions.includes(ext)) {
+                showError('Sadece PDF veya Word (.doc, .docx) formatındaki dosyaları yükleyebilirsiniz.');
+                e.target.value = '';
+                uploadTitle.innerText = "Dosya seçmek için tıklayın veya sürükleyin";
+                document.getElementById('uploadSubtitle').innerText = "PDF, DOC, DOCX — Maks. 5MB";
+                iconWrapper.classList.remove('text-green-500', 'dark:text-green-400');
+                iconWrapper.classList.add('text-gray-300', 'dark:text-gray-600');
+                return;
             }
+
+            document.getElementById('jsErrorContainer').classList.add('hidden');
+            uploadTitle.innerText = file.name;
+            var sizeMb = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            document.getElementById('uploadSubtitle').innerHTML =
+                '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800">' + ext + '</span> &bull; ' + sizeMb;
+
+            iconWrapper.classList.remove('text-gray-300', 'dark:text-gray-600');
+            iconWrapper.classList.add('text-green-500', 'dark:text-green-400');
+            lucide.createIcons();
         });
 
-        // Form Gönderim (Submit) ve İlerleme Çubuğu Akışı
         document.getElementById('uploadForm').addEventListener('submit', function (e) {
-            var fileInput = document.getElementById('fileInput');
-            
-            // Dosya seçili mi kontrolü
-            if (!fileInput.files || fileInput.files.length === 0) {
-                return;
-            }
+            if (!fileInput.files || fileInput.files.length === 0) return;
+            var ext = fileInput.files[0].name.substring(fileInput.files[0].name.lastIndexOf('.')).toUpperCase();
+            if (!allowedExtensions.includes(ext)) { e.preventDefault(); return; }
 
-            var file = fileInput.files[0];
-            var fileName = file.name;
-            var fileExtension = fileName.substring(fileName.lastIndexOf('.')).toUpperCase();
-            var allowedExtensions = ['.PDF', '.DOC', '.DOCX'];
-
-            // Uzantı geçersizse submit'i durdur
-            if (!allowedExtensions.includes(fileExtension)) {
-                e.preventDefault();
-                return;
-            }
-
-            // Yükleme ekranını göster
-            var overlay = document.getElementById('loadingOverlay');
-            overlay.classList.remove('hidden');
-
+            document.getElementById('loadingOverlay').classList.remove('hidden');
             var statusText = document.getElementById('loadingStatusText');
             var progressBar = document.getElementById('loadingProgressBar');
             var percentageText = document.getElementById('loadingPercentage');
-
             var progress = 0;
             var messages = [
                 { limit: 20, text: "Dosyanız yükleniyor..." },
                 { limit: 45, text: "Google Drive'a kaydediliyor..." },
                 { limit: 65, text: "Metin içeriği çıkartılıyor..." },
-                { limit: 85, text: "Yapay zeka analiz ediyor, lütfen bekleyin..." },
-                { limit: 95, text: "Yapay zeka analiz sonuçlarını düzenliyor..." },
+                { limit: 85, text: "Yapay zeka analiz ediyor..." },
+                { limit: 95, text: "Analiz sonuçları düzenleniyor..." },
                 { limit: 99, text: "Dosya kaydı tamamlanıyor..." }
             ];
-
-            // Animasyon çubuğunu doldur
             var interval = setInterval(function () {
                 if (progress < 98) {
-                    // Yükleme ve AI analizi süresine göre artış hızı
                     progress += Math.random() * 2.5 + 0.3;
-                    if (progress > 98) {
-                        progress = 98;
-                    }
-
-                    var percent = Math.floor(progress);
-                    progressBar.style.width = percent + "%";
-                    percentageText.innerText = percent + "%";
-
-                    // Mevcut yüzdeye göre durum mesajını güncelle
+                    if (progress > 98) progress = 98;
+                    var pct = Math.floor(progress);
+                    progressBar.style.width = pct + '%';
+                    percentageText.innerText = pct + '%';
                     for (var i = 0; i < messages.length; i++) {
-                        if (percent <= messages[i].limit) {
-                            statusText.innerText = messages[i].text;
-                            break;
-                        }
+                        if (pct <= messages[i].limit) { statusText.innerText = messages[i].text; break; }
                     }
                 } else {
                     clearInterval(interval);
                 }
-            }, 250); // Hızlı ve akıcı ilerleme
+            }, 250);
         });
     </script>
 }
