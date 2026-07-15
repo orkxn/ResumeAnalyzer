@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ResumeAnalyzer.DTOs;
 using ResumeAnalyzer.Services;
 using Microsoft.AspNetCore.RateLimiting;
+using FluentValidation;
 
 namespace ResumeAnalyzer.Controllers
 {
@@ -9,19 +10,24 @@ namespace ResumeAnalyzer.Controllers
     public class AccountController : Controller
     {
         private readonly AuthService _authService;
+        private readonly IValidator<LoginRequestDto> _loginValidator;
+        private readonly IValidator<RegisterRequestDto> _registerValidator;
 
-        public AccountController(AuthService _authService)
+        public AccountController(
+            AuthService authService,
+            IValidator<LoginRequestDto> loginValidator,
+            IValidator<RegisterRequestDto> registerValidator)
         {
-            this._authService = _authService;
+            _authService = authService;
+            _loginValidator = loginValidator;
+            _registerValidator = registerValidator;
         }
 
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
             if (User.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Home");
-            }
 
             ViewData["ReturnUrl"] = returnUrl;
             return View();
@@ -33,8 +39,11 @@ namespace ResumeAnalyzer.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (!ModelState.IsValid)
+            var validation = await _loginValidator.ValidateAsync(dto, HttpContext.RequestAborted);
+            if (!validation.IsValid)
             {
+                foreach (var error in validation.Errors)
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 return View(dto);
             }
 
@@ -49,20 +58,13 @@ namespace ResumeAnalyzer.Controllers
             if (result.Succeeded)
             {
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
                     return Redirect(returnUrl);
-                }
                 return RedirectToAction("Index", "Home");
             }
 
-            if (result.IsLockedOut)
-            {
-                ModelState.AddModelError("", "Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.");
-            }
-            else
-            {
-                ModelState.AddModelError("", "Geçersiz e-posta veya şifre.");
-            }
+            ModelState.AddModelError("", result.IsLockedOut
+                ? "Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin."
+                : "Geçersiz e-posta veya şifre.");
 
             return View(dto);
         }
@@ -71,9 +73,7 @@ namespace ResumeAnalyzer.Controllers
         public IActionResult Register(string? returnUrl = null)
         {
             if (User.Identity?.IsAuthenticated == true)
-            {
                 return RedirectToAction("Index", "Home");
-            }
 
             ViewData["ReturnUrl"] = returnUrl;
             return View();
@@ -85,33 +85,29 @@ namespace ResumeAnalyzer.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (!ModelState.IsValid)
+            var validation = await _registerValidator.ValidateAsync(dto, HttpContext.RequestAborted);
+            if (!validation.IsValid)
             {
+                foreach (var error in validation.Errors)
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 return View(dto);
             }
 
             var serviceResult = await _authService.RegisterAsync(dto);
             if (!serviceResult.IsSuccess)
             {
-                if (serviceResult.Errors != null && serviceResult.Errors.Count > 0)
-                {
+                if (serviceResult.Errors?.Count > 0)
                     foreach (var error in serviceResult.Errors)
-                    {
                         ModelState.AddModelError("", error);
-                    }
-                }
                 else
-                {
                     ModelState.AddModelError("", serviceResult.ErrorMessage!);
-                }
                 return View(dto);
             }
 
-            var result = serviceResult.Data!;
-            if (result.Succeeded)
+            if (serviceResult.Data!.Succeeded)
             {
                 TempData["RegistrationSuccess"] = "Kayıt başarılı! Giriş yapmak için lütfen bilgilerinizi girin.";
-                return RedirectToAction(nameof(Login), new { returnUrl = returnUrl });
+                return RedirectToAction(nameof(Login), new { returnUrl });
             }
 
             return View(dto);
@@ -125,10 +121,7 @@ namespace ResumeAnalyzer.Controllers
         }
 
         [HttpGet]
-        public IActionResult ForgotPassword()
-        {
-            return View();
-        }
+        public IActionResult ForgotPassword() => View();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
