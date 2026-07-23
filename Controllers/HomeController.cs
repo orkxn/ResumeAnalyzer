@@ -90,6 +90,24 @@ public class HomeController : Controller
                 model.ErrorMessage = exception.Message;
                 model.IconType = "500";
             }
+            else if (exception is HttpRequestException)
+            {
+                model.Title = "Bağlantı Hatası";
+                model.ErrorMessage = "Harici bir servise (AI analiz motoru vb.) bağlanılamadı. Lütfen birkaç dakika sonra tekrar deneyin.";
+                model.IconType = "500";
+            }
+            else if (exception is TaskCanceledException or OperationCanceledException)
+            {
+                model.Title = "Zaman Aşımı";
+                model.ErrorMessage = "İşlem zaman aşımına uğradı. Sunucu şu an yoğun olabilir, lütfen daha sonra tekrar deneyin.";
+                model.IconType = "500";
+            }
+            else if (exception is Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                model.Title = "Veritabanı Hatası";
+                model.ErrorMessage = "Verileriniz kaydedilirken bir sorun oluştu. Lütfen tekrar deneyin.";
+                model.IconType = "500";
+            }
             else
             {
                 model.Title = "Sistem Hatası";
