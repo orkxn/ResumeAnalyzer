@@ -135,6 +135,12 @@ namespace ResumeAnalyzer.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             await _resumeService.DeleteResumeAsync(id, CurrentUserId, HttpContext.RequestAborted);
+            
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || Request.Headers.Accept.ToString().Contains("application/json"))
+            {
+                return Json(new { success = true, message = "Özgeçmiş başarıyla silindi." });
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

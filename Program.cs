@@ -155,11 +155,7 @@ public static class DotEnv
                 value = value[1..^1];
             }
 
-            // Only set if not already present in the environment (e.g. set by Docker Compose)
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(key)))
-            {
-                Environment.SetEnvironmentVariable(key, value);
-            }
+            Environment.SetEnvironmentVariable(key, value);
         }
     }
 }

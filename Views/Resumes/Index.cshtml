@@ -154,10 +154,10 @@
             border border-gray-800 dark:border-gray-200
             transition-all duration-300 translate-y-20 opacity-0 pointer-events-none">
     <div class="flex items-center gap-2.5 min-w-0">
-        <i data-lucide="circle-check" class="w-4 h-4 text-green-400 dark:text-green-600 shrink-0"></i>
+        <i data-lucide="trash-2" class="w-4 h-4 text-red-400 dark:text-red-600 shrink-0"></i>
         <span id="undoToastText" class="text-xs font-medium truncate">Özgeçmiş silindi.</span>
     </div>
-    <button id="undoButton" class="text-xs font-bold text-blue-400 hover:text-blue-300 dark:text-blue-600 dark:hover:text-blue-700 uppercase tracking-wider shrink-0 transition-colors">
+    <button id="undoButton" type="button" class="text-xs font-bold text-blue-400 hover:text-blue-300 dark:text-blue-600 dark:hover:text-blue-700 uppercase tracking-wider shrink-0 transition-colors">
         Geri Al
     </button>
 </div>
@@ -168,7 +168,10 @@
         let pendingDeleteTimeout = null;
 
         function triggerDelete(resumeId, fileName) {
-            if (pendingDeleteId !== null) executePendingDelete();
+            // Eğer önceden bekleyen başka bir silme varsa onu derhal sunucuya gönder
+            if (pendingDeleteId !== null) {
+                executePendingDelete();
+            }
 
             const card = document.getElementById('card-' + resumeId);
             if (card) {
@@ -178,40 +181,86 @@
             }
 
             pendingDeleteId = resumeId;
-            document.getElementById('undoToastText').innerText = `"${fileName}" adlı özgeçmiş silinmiştir.`;
+            document.getElementById('undoToastText').innerText = `"${fileName}" silindi.`;
+            
             const toast = document.getElementById('undoToast');
             toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
             lucide.createIcons();
 
-            pendingDeleteTimeout = setTimeout(executePendingDelete, 5000);
+            // 5 saniye bekle, geri alınmazsa sunucuya silme isteği gönder
+            pendingDeleteTimeout = setTimeout(() => {
+                executePendingDelete();
+                hideToast();
+            }, 5000);
         }
 
         function executePendingDelete() {
             if (pendingDeleteId === null) return;
-            const form = document.getElementById('deleteForm-' + pendingDeleteId);
-            if (form) form.submit();
+
+            const resumeId = pendingDeleteId;
             pendingDeleteId = null;
-            clearTimeout(pendingDeleteTimeout);
-            pendingDeleteTimeout = null;
+            if (pendingDeleteTimeout) {
+                clearTimeout(pendingDeleteTimeout);
+                pendingDeleteTimeout = null;
+            }
+
+            const form = document.getElementById('deleteForm-' + resumeId);
+            if (!form) return;
+
+            const formData = new FormData(form);
+            
+            // fetch keepalive sayesinde sayfa yenilense veya başka yere gidilse bile istek sunucuya ulaşır
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                keepalive: true
+            }).then(() => {
+                const card = document.getElementById('card-' + resumeId);
+                if (card) card.remove();
+                
+                const remainingCards = document.querySelectorAll('[id^="card-"]:not(.hidden)');
+                if (remainingCards.length === 0) {
+                    window.location.reload();
+                }
+            }).catch(err => Console.error('Silme hatası:', err));
         }
 
         document.getElementById('undoButton').addEventListener('click', function () {
             if (pendingDeleteId === null) return;
-            clearTimeout(pendingDeleteTimeout);
-            pendingDeleteTimeout = null;
+
+            if (pendingDeleteTimeout) {
+                clearTimeout(pendingDeleteTimeout);
+                pendingDeleteTimeout = null;
+            }
 
             const card = document.getElementById('card-' + pendingDeleteId);
             if (card) {
                 card.classList.remove('hidden');
-                setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'scale(1)'; }, 50);
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1)';
+                }, 50);
             }
 
-            document.getElementById('undoToast').classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
             pendingDeleteId = null;
+            hideToast();
         });
 
+        function hideToast() {
+            const toast = document.getElementById('undoToast');
+            if (toast) {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Kullanıcı 5 saniye dolmadan sayfayı yenilerse veya terk ederse beklemedeki silmeyi ANINDA sunucuya ilet
         window.addEventListener('beforeunload', function () {
-            if (pendingDeleteId !== null) executePendingDelete();
+            if (pendingDeleteId !== null) {
+                executePendingDelete();
+            }
         });
     </script>
 }
